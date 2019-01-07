@@ -10,15 +10,19 @@ import java.util.Optional;
 
 public class HttpResponseMock<T> implements HttpResponse<T> {
 
+    private final int statusCode;
+    private final HttpHeaders headers;
+
     T body;
 
-    public HttpResponseMock(T body) {
-        this.body = body;
+    HttpResponseMock(int statusCode, HttpHeaders headers) {
+        this.statusCode = statusCode;
+        this.headers = headers;
     }
 
     @Override
     public int statusCode() {
-        return 0;
+        return statusCode;
     }
 
     @Override
@@ -33,7 +37,7 @@ public class HttpResponseMock<T> implements HttpResponse<T> {
 
     @Override
     public HttpHeaders headers() {
-        return null;
+        return headers;
     }
 
     @Override
