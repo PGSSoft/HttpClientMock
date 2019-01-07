@@ -1,6 +1,9 @@
 package com.pgssoft;
 
+import com.pgssoft.action.Action;
+import com.pgssoft.action.SetStatusAction;
 import com.pgssoft.condition.BodyCondition;
+import com.pgssoft.rule.Rule;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
@@ -14,9 +17,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -26,6 +27,7 @@ import static org.hamcrest.Matchers.containsString;
 
 public final class HttpClientMock extends HttpClient {
 
+    private final List<Rule> rules = new ArrayList<>();
 
     @Override
     public Optional<CookieHandler> cookieHandler() {
@@ -93,18 +95,31 @@ public final class HttpClientMock extends HttpClient {
 
         try {
 
+            // TO BE REMOVED
             var bodyCondition = new BodyCondition(containsString("123"));
             bodyCondition.matches(request);
 
-            var subscriber = responseBodyHandler.apply(responseInfo);
+            // TO BE REMOVED
+            var actions = new LinkedList<Action>();
+            actions.add(new SetStatusAction(200));
+            rules.add(new Rule(List.of(), actions));
+
+            final Rule rule = rules.stream()
+                    .filter(r -> r.matches(request))
+                    .reduce((a, b) -> b)
+                    .orElse(null);
+
+            return rule != null ? rule.next() : null;
+
+            /*var subscriber = responseBodyHandler.apply(responseInfo);
 
             var publisher = new SubmissionPublisher<List<ByteBuffer>>();
             publisher.subscribe(subscriber);
             publisher.submit(List.of(ByteBuffer.wrap(new byte[] {'a', 'l', 'a'})));
             publisher.close();
 
-            return new HttpResponseMock(subscriber.getBody().toCompletableFuture().get());
-        } catch (ExecutionException e) {
+            return new HttpResponseMock(subscriber.getBody().toCompletableFuture().get(), headers);*/
+        } catch (Exception e) {
             throw new IllegalStateException(e);
         }
     }
