@@ -1,5 +1,7 @@
 package com.pgssoft;
 
+import com.pgssoft.condition.BodyCondition;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import java.io.IOException;
@@ -19,6 +21,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SubmissionPublisher;
+
+import static org.hamcrest.Matchers.containsString;
 
 public final class HttpClientMock extends HttpClient {
 
@@ -88,6 +92,10 @@ public final class HttpClientMock extends HttpClient {
         };
 
         try {
+
+            var bodyCondition = new BodyCondition(containsString("123"));
+            bodyCondition.matches(request);
+
             var subscriber = responseBodyHandler.apply(responseInfo);
 
             var publisher = new SubmissionPublisher<List<ByteBuffer>>();

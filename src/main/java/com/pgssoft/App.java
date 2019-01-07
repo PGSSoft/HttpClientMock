@@ -14,7 +14,9 @@ public class App
 {
     public static void main( String[] args ) throws IOException, InterruptedException {
         HttpClient httpClient = new HttpClientMock();
-        var req = HttpRequest.newBuilder(URI.create("https://www.google.com")).build();
+        var req = HttpRequest.newBuilder(URI.create("https://www.google.com"))
+                .POST(HttpRequest.BodyPublishers.ofString("123"))
+                .build();
         var res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
         System.out.println( res.body() );
     }
