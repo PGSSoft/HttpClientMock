@@ -9,6 +9,7 @@ public final class MockResponseBuilder {
 
     private int statusCode;
     private Map<String, List<String>> headers = Map.of();
+    private Object body;
 
     public int getStatusCode() {
         return statusCode;
@@ -30,7 +31,15 @@ public final class MockResponseBuilder {
         headers.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
     }
 
+    public Object getBody() {
+        return body;
+    }
+
+    public void setBody(Object body) {
+        this.body = body;
+    }
+
     public <T> HttpResponseMock<T> build() {
-        return new HttpResponseMock<>(statusCode, HttpHeaders.of(headers, (a, b) -> true));
+        return new HttpResponseMock<T>(statusCode, HttpHeaders.of(headers, (a, b) -> true), (T) body);
     }
 }

@@ -1,6 +1,7 @@
 package com.pgssoft;
 
 import com.pgssoft.action.Action;
+import com.pgssoft.action.SetBodyStringAction;
 import com.pgssoft.action.SetStatusAction;
 import com.pgssoft.condition.BodyCondition;
 import com.pgssoft.rule.Rule;
@@ -102,6 +103,7 @@ public final class HttpClientMock extends HttpClient {
             // TO BE REMOVED
             var actions = new LinkedList<Action>();
             actions.add(new SetStatusAction(200));
+            actions.add(new SetBodyStringAction("123"));
             rules.add(new Rule(List.of(), actions));
 
             final Rule rule = rules.stream()

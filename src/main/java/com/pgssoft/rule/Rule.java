@@ -23,7 +23,7 @@ public final class Rule {
         return conditions.stream().allMatch(c -> c.matches(request));
     }
 
-    public HttpResponse next() {
+    public HttpResponse next() throws Exception {
         final var responseBuilder = new MockResponseBuilder();
         for (int i = 0; i < actions.size()-1; i++) {
             actions.poll().enrichResponse(responseBuilder);

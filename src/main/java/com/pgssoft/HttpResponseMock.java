@@ -12,12 +12,12 @@ public class HttpResponseMock<T> implements HttpResponse<T> {
 
     private final int statusCode;
     private final HttpHeaders headers;
+    private final T body;
 
-    T body;
-
-    HttpResponseMock(int statusCode, HttpHeaders headers) {
+    HttpResponseMock(int statusCode, HttpHeaders headers, T body) {
         this.statusCode = statusCode;
         this.headers = headers;
+        this.body = body;
     }
 
     @Override
