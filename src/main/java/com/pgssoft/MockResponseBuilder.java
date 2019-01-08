@@ -39,7 +39,7 @@ public final class MockResponseBuilder {
         this.body = body;
     }
 
-    public <T> HttpResponseMock<T> build() {
-        return new HttpResponseMock<T>(statusCode, HttpHeaders.of(headers, (a, b) -> true), (T) body);
+    public <T> HttpResponseProxy<T> build() {
+        return new HttpResponseProxy<T>(statusCode, HttpHeaders.of(headers, (a, b) -> true), (T) body);
     }
 }

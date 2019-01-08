@@ -8,13 +8,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-public class HttpResponseMock<T> implements HttpResponse<T> {
+public class HttpResponseProxy<T> implements HttpResponse<T> {
 
     private final int statusCode;
     private final HttpHeaders headers;
     private final T body;
 
-    HttpResponseMock(int statusCode, HttpHeaders headers, T body) {
+    HttpResponseProxy(int statusCode, HttpHeaders headers, T body) {
         this.statusCode = statusCode;
         this.headers = headers;
         this.body = body;

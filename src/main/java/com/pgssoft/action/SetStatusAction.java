@@ -1,6 +1,5 @@
 package com.pgssoft.action;
 
-import com.pgssoft.HttpResponseMock;
 import com.pgssoft.MockResponseBuilder;
 
 public final class SetStatusAction implements Action {
