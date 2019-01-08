@@ -9,9 +9,14 @@ import org.hamcrest.StringDescription;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 public class UrlConditions {
 
@@ -22,6 +27,29 @@ public class UrlConditions {
     private MatchersList<String> pathConditions = new MatchersList<>();
     private MatchersList<Integer> portConditions = new MatchersList<>();
     private Matcher<String> schemaConditions = Matchers.any(String.class);
+
+    public static UrlConditions parse(String urlText) {
+        try {
+            UrlConditions conditions = new UrlConditions();
+            URL url = new URL(urlText);
+            if (url.getRef() != null) {
+                conditions.setReferenceConditions(equalTo(url.getRef()));
+            } else {
+                conditions.setReferenceConditions(isEmptyOrNullString());
+            }
+            conditions.setSchemaConditions(Matchers.equalTo(url.getProtocol()));
+            conditions.getHostConditions().add(equalTo(url.getHost()));
+            conditions.getPortConditions().add(equalTo(url.getPort()));
+            conditions.getPathConditions().add(equalTo(url.getPath()));
+            List<KeyValuePair> params = UrlParams.parse(url.getQuery(), Charset.forName("UTF-8"));
+            for (KeyValuePair param : params) {
+                conditions.getParameterConditions().put(param.getKey(), equalTo(param.getValue()));
+            }
+            return conditions;
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
 
     public MatchersMap<String, String> getParameterConditions() {
         return parameterConditions;
