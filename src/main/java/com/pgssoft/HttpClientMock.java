@@ -29,6 +29,11 @@ import static org.hamcrest.Matchers.containsString;
 public final class HttpClientMock extends HttpClient {
 
     private final List<Rule> rules = new ArrayList<>();
+    private final String host;
+
+    public HttpClientMock(String host) {
+        this.host = host;
+    }
 
     @Override
     public Optional<CookieHandler> cookieHandler() {
