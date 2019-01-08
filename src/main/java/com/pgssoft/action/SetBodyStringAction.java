@@ -1,6 +1,6 @@
 package com.pgssoft.action;
 
-import com.pgssoft.MockResponseBuilder;
+import com.pgssoft.HttpResponseProxy;
 
 public final class SetBodyStringAction implements Action {
 
@@ -11,7 +11,7 @@ public final class SetBodyStringAction implements Action {
     }
 
     @Override
-    public void enrichResponse(MockResponseBuilder responseBuilder) throws Exception {
+    public void enrichResponse(HttpResponseProxy.Builder responseBuilder) throws Exception {
         responseBuilder.setBody(content);
     }
 }

@@ -6,6 +6,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class HttpResponseProxy<T> implements HttpResponse<T> {
@@ -14,7 +17,7 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
     private final HttpHeaders headers;
     private final T body;
 
-    HttpResponseProxy(int statusCode, HttpHeaders headers, T body) {
+    private HttpResponseProxy(int statusCode, HttpHeaders headers, T body) {
         this.statusCode = statusCode;
         this.headers = headers;
         this.body = body;
@@ -58,5 +61,44 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
     @Override
     public HttpClient.Version version() {
         return null;
+    }
+
+    public final static class Builder {
+
+        private int statusCode;
+        private Map<String, List<String>> headers = Map.of();
+        private Object body;
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+
+        public void setStatusCode(int statusCode) {
+            this.statusCode = statusCode;
+        }
+
+        public Map<String, List<String>> getHeaders() {
+            return headers;
+        }
+
+        public void setHeaders(Map<String, List<String>> headers) {
+            this.headers = headers;
+        }
+
+        public void addHeader(String key, String value) {
+            headers.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        }
+
+        public Object getBody() {
+            return body;
+        }
+
+        public void setBody(Object body) {
+            this.body = body;
+        }
+
+        public <T> HttpResponseProxy<T> build() {
+            return new HttpResponseProxy<T>(statusCode, HttpHeaders.of(headers, (a, b) -> true), (T) body);
+        }
     }
 }

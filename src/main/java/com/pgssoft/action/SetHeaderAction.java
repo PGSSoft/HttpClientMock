@@ -1,6 +1,6 @@
 package com.pgssoft.action;
 
-import com.pgssoft.MockResponseBuilder;
+import com.pgssoft.HttpResponseProxy;
 
 public final class SetHeaderAction implements Action {
 
@@ -12,7 +12,7 @@ public final class SetHeaderAction implements Action {
     }
 
     @Override
-    public void enrichResponse(MockResponseBuilder responseBuilder) {
+    public void enrichResponse(HttpResponseProxy.Builder responseBuilder) {
         responseBuilder.addHeader(key, value);
     }
 }

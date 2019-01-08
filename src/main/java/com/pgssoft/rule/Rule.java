@@ -1,6 +1,6 @@
 package com.pgssoft.rule;
 
-import com.pgssoft.MockResponseBuilder;
+import com.pgssoft.HttpResponseProxy;
 import com.pgssoft.UrlConditions;
 import com.pgssoft.action.Action;
 import com.pgssoft.condition.Condition;
@@ -28,7 +28,7 @@ public final class Rule {
     }
 
     public HttpResponse next() throws Exception {
-        final var responseBuilder = new MockResponseBuilder();
+        final var responseBuilder = new HttpResponseProxy.Builder();
         for (int i = 0; i < actions.size()-1; i++) {
             actions.poll().enrichResponse(responseBuilder);
         }

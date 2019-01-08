@@ -1,7 +1,7 @@
 package com.pgssoft.action;
 
-import com.pgssoft.MockResponseBuilder;
+import com.pgssoft.HttpResponseProxy;
 
 public interface Action {
-    void enrichResponse(MockResponseBuilder responseBuilder) throws Exception;
+    void enrichResponse(HttpResponseProxy.Builder responseBuilder) throws Exception;
 }
