@@ -13,7 +13,7 @@ import java.net.http.HttpResponse;
 public class App 
 {
     public static void main( String[] args ) throws IOException, InterruptedException {
-        HttpClient httpClient = new HttpClientMock();
+        HttpClient httpClient = new HttpClientMock("https://www.google.com");
         var req = HttpRequest.newBuilder(URI.create("https://www.google.com"))
                 .POST(HttpRequest.BodyPublishers.ofString("123"))
                 .build();
