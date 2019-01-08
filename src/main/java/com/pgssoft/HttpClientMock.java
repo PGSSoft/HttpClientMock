@@ -104,7 +104,7 @@ public final class HttpClientMock extends HttpClient {
             var actions = new LinkedList<Action>();
             actions.add(new SetStatusAction(200));
             actions.add(new SetBodyStringAction("123"));
-            rules.add(new Rule(List.of(), actions));
+            rules.add(new Rule(new UrlConditions(), List.of(), actions));
 
             final Rule rule = rules.stream()
                     .filter(r -> r.matches(request))

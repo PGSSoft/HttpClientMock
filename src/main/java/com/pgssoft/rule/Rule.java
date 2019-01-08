@@ -1,6 +1,7 @@
 package com.pgssoft.rule;
 
 import com.pgssoft.MockResponseBuilder;
+import com.pgssoft.UrlConditions;
 import com.pgssoft.action.Action;
 import com.pgssoft.condition.Condition;
 
@@ -11,16 +12,19 @@ import java.util.Queue;
 
 public final class Rule {
 
-    private final Queue<Action> actions;
+    private final UrlConditions urlConditions;
     private final List<Condition> conditions;
+    private final Queue<Action> actions;
 
-    public Rule(List<Condition> conditions, Queue<Action> actions) {
+    public Rule(UrlConditions urlConditions, List<Condition> conditions, Queue<Action> actions) {
+        this.urlConditions = urlConditions;
         this.conditions = conditions;
         this.actions = actions;
     }
 
     public boolean matches(HttpRequest request) {
-        return conditions.stream().allMatch(c -> c.matches(request));
+        return urlConditions.matches(request.uri()) &&
+                conditions.stream().allMatch(c -> c.matches(request));
     }
 
     public HttpResponse next() throws Exception {
