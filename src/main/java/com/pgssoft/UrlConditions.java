@@ -38,9 +38,15 @@ public class UrlConditions {
                 conditions.setReferenceConditions(isEmptyOrNullString());
             }
             conditions.setSchemaConditions(Matchers.equalTo(url.getProtocol()));
-            conditions.getHostConditions().add(equalTo(url.getHost()));
-            conditions.getPortConditions().add(equalTo(url.getPort()));
-            conditions.getPathConditions().add(equalTo(url.getPath()));
+            if (url.getHost() != null && url.getHost().length() > 0) {  // TODO: Could use a better way of checking for null strings in this method
+                conditions.getHostConditions().add(equalTo(url.getHost()));
+            }
+            if (url.getPort() != -1) {
+                conditions.getPortConditions().add(equalTo(url.getPort()));
+            }
+            if (url.getPath() != null && url.getPath().length() > 0) {
+                conditions.getPathConditions().add(equalTo(url.getPath()));
+            }
             List<KeyValuePair> params = UrlParams.parse(url.getQuery(), Charset.forName("UTF-8"));
             for (KeyValuePair param : params) {
                 conditions.getParameterConditions().put(param.getKey(), equalTo(param.getValue()));
