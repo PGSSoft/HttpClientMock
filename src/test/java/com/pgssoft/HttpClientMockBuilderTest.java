@@ -151,4 +151,22 @@ public class HttpClientMockBuilderTest {
         assertThat(getChrome, hasContent("chrome"));
         //assertThat(httpClientMock.execute(getSafari), hasStatus(404));
     }
+
+    @Test
+    public void should_match_right_parameter_value() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+
+        httpClientMock
+                .onGet("/foo").withParameter("id", "1").withParameter("name", "abc")
+                .doReturn("one");
+        httpClientMock
+                .onGet("/foo").withParameter("id", "2")
+                .doReturn("two");
+
+        final var one = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo?id=1&name=abc")).GET().build(), ofString());
+        final var two = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo?id=2")).GET().build(), ofString());
+
+        assertThat(one, hasContent("one"));
+        assertThat(two, hasContent("two"));
+    }
 }
