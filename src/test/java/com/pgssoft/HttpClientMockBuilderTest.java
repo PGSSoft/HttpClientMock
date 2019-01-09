@@ -114,4 +114,25 @@ public class HttpClientMockBuilderTest {
 
         assertThat(first, hasContent("yes"));
     }
+
+    @Test
+    public void shouldUseRightHostAndPath() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock();
+
+        httpClientMock.onGet("http://localhost:8080/foo").doReturn("localhost");
+        httpClientMock.onGet("http://www.google.com").doReturn("google");
+        httpClientMock.onGet("https://www.google.com").doReturn("https");
+
+//        HttpResponse localhost = httpClientMock.execute(new HttpGet("http://localhost:8080/foo"));
+//        HttpResponse google = httpClientMock.execute(new HttpGet("http://www.google.com"));
+//        HttpResponse https = httpClientMock.execute(new HttpGet("https://www.google.com"));
+
+        final HttpResponse localhost = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo")).GET().build(), ofString());
+        final HttpResponse google = httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), ofString());
+        final HttpResponse https = httpClientMock.send(newBuilder(URI.create("https://www.google.com")).GET().build(), ofString());
+
+        assertThat(localhost, hasContent("localhost"));
+        assertThat(google, hasContent("google"));
+        assertThat(https, hasContent("https"));
+    }
 }
