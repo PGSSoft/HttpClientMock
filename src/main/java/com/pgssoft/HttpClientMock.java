@@ -273,6 +273,7 @@ public final class HttpClientMock extends HttpClient {
                                 .map(RuleBuilder::build)
                                 .collect(Collectors.toList())
                 );
+                rulesUnderConstruction.clear();
             }
 
             requests.add(request);
