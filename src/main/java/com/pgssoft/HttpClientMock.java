@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.containsString;
 
@@ -32,9 +33,31 @@ public final class HttpClientMock extends HttpClient {
     private final List<Rule> rules = new ArrayList<>();
     private final List<RuleBuilder> rulesUnderConstruction = new ArrayList<>();
     private final String host;
+    private final List<HttpRequest> requests = new ArrayList<>();
+
+    public HttpClientMock() {
+        this("");
+    }
 
     public HttpClientMock(String host) {
         this.host = host;
+    }
+
+    /**
+     * Resets mock to initial state where there are no rules and no previous requests.
+     */
+    public void reset() {
+        this.rulesUnderConstruction.clear();
+        this.requests.clear();
+    }
+
+    /**
+     * Creates verification builder.
+     *
+     * @return request number verification builder
+     */
+    public HttpClientVerify verify() {
+        return new HttpClientVerify(host, requests);
     }
 
     /**
@@ -232,34 +255,27 @@ public final class HttpClientMock extends HttpClient {
 
     @Override
     public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException, InterruptedException {
-        final HttpResponse.ResponseInfo responseInfo = new HttpResponse.ResponseInfo() {
-            @Override
-            public int statusCode() {
-                return 200;
-            }
-
-            @Override
-            public HttpHeaders headers() {
-                return HttpHeaders.of(Map.of(), (a,b) -> true);
-            }
-
-            @Override
-            public Version version() {
-                return Version.HTTP_1_1;
-            }
-        };
-
         try {
 
             // TO BE REMOVED
-            var bodyCondition = new BodyCondition(containsString("123"));
-            bodyCondition.matches(request);
+            //var bodyCondition = new BodyCondition(containsString("123"));
+            //bodyCondition.matches(request);
 
             // TO BE REMOVED
-            var actions = new LinkedList<Action>();
-            actions.add(new SetStatusAction(200));
-            actions.add(new SetBodyStringAction("123"));
-            rules.add(new Rule(new UrlConditions(), List.of(), actions));
+            //var actions = new LinkedList<Action>();
+            //actions.add(new SetStatusAction(200));
+            //actions.add(new SetBodyStringAction("123"));
+            //rules.add(new Rule(new UrlConditions(), List.of(), actions));
+
+            synchronized (rulesUnderConstruction) {
+                rules.addAll(
+                        rulesUnderConstruction.stream()
+                                .map(RuleBuilder::build)
+                                .collect(Collectors.toList())
+                );
+            }
+
+            requests.add(request);
 
             final Rule rule = rules.stream()
                     .filter(r -> r.matches(request))
