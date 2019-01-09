@@ -1,8 +1,10 @@
 package com.pgssoft;
 
+import com.pgssoft.condition.Condition;
 import org.junit.Test;
 
 import java.net.URI;
+import java.net.http.HttpResponse;
 
 import static com.pgssoft.matchers.HttpResponseMatchers.hasContent;
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
@@ -97,5 +99,19 @@ public class HttpClientMockBuilderTest {
         assertThat(headResponse, hasContent("head"));
         assertThat(optionsResponse, hasContent("options"));
         assertThat(patchResponse, hasContent("patch"));
+    }
+
+    @Test
+    public void shouldCheckCustomRule() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        final Condition fooCondition = request -> request.uri().toString().contains("foo");
+        httpClientMock.onGet("http://localhost/foo/bar")
+                .with(fooCondition)
+                .doReturn("yes");
+
+        final HttpResponse first = httpClientMock.send(newBuilder(URI.create("http://localhost/foo/bar")).GET().build(), ofString());
+
+        assertThat(first, hasContent("yes"));
     }
 }
