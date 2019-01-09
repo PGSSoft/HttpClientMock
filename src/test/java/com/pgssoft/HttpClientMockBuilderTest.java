@@ -169,4 +169,22 @@ public class HttpClientMockBuilderTest {
         assertThat(one, hasContent("one"));
         assertThat(two, hasContent("two"));
     }
+
+    @Test
+    public void should_add_default_host_to_every_relative_path() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+
+        httpClientMock.onGet("/login").doReturn("login");
+        httpClientMock.onGet("/product/search").doReturn("search");
+        httpClientMock.onGet("/logout").doReturn("logout");
+
+        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
+        final var search = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/product/search")).GET().build(), ofString());
+        final var logout = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/logout")).GET().build(), ofString());
+
+        assertThat(login, hasContent("login"));
+        assertThat(search, hasContent("search"));
+        assertThat(logout, hasContent("logout"));
+
+    }
 }
