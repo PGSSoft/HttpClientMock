@@ -131,4 +131,24 @@ public class HttpClientMockBuilderTest {
         assertThat(google, hasContent("google"));
         assertThat(https, hasContent("https"));
     }
+
+    @Test
+    public void shouldMatchRightHeaderValue() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+
+        httpClientMock
+                .onGet("/login").withHeader("User-Agent", "Mozilla")
+                .doReturn("mozilla");
+        httpClientMock
+                .onGet("/login").withHeader("User-Agent", "Chrome")
+                .doReturn("chrome");
+
+        final var getMozilla = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().header("User-Agent", "Mozilla").build(), ofString());
+        final var getChrome = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().header("User-Agent", "Chrome").build(), ofString());
+        //final var getSafari = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().header("User-Agent", "Safari").build(), ofString());
+
+        assertThat(getMozilla, hasContent("mozilla"));
+        assertThat(getChrome, hasContent("chrome"));
+        //assertThat(httpClientMock.execute(getSafari), hasStatus(404));
+    }
 }
