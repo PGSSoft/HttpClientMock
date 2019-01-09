@@ -3,10 +3,10 @@ package com.pgssoft;
 import org.junit.Test;
 
 import java.net.URI;
-import java.net.http.HttpRequest;
 
 import static com.pgssoft.matchers.HttpResponseMatchers.hasContent;
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
+import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,7 +23,7 @@ public class HttpClientMockBuilderTest {
                 .withPath("/login")
                 .doReturnStatus(200);
 
-        var req = HttpRequest.newBuilder(URI.create("http://localhost/login"))
+        var req = newBuilder(URI.create("http://localhost/login"))
                 .POST(noBody())
                 .build();
         var res = httpClientMock.send(req, ofString());
@@ -45,21 +45,21 @@ public class HttpClientMockBuilderTest {
                 .doReturn("two");
 
         var firstResponse = httpClientMock.send(
-                HttpRequest.newBuilder(URI.create("http://localhost/login?a=1"))
+                newBuilder(URI.create("http://localhost/login?a=1"))
                         .POST(noBody())
                         .build(),
                 ofString()
         );
 
         var secondResponse = httpClientMock.send(
-                HttpRequest.newBuilder(URI.create("http://localhost/login?b=2"))
+                newBuilder(URI.create("http://localhost/login?b=2"))
                         .POST(noBody())
                         .build(),
                 ofString()
         );
 
         var thirdResponse = httpClientMock.send(
-                HttpRequest.newBuilder(URI.create("http://localhost/login?a=1&b=2"))
+                newBuilder(URI.create("http://localhost/login?a=1&b=2"))
                         .POST(noBody())
                         .build(),
                 ofString()
@@ -68,5 +68,34 @@ public class HttpClientMockBuilderTest {
         assertThat(firstResponse, hasContent("one"));
         assertThat(secondResponse, hasContent("two"));
         assertNull(thirdResponse);
+    }
+
+    @Test
+    public void shouldUseRightMethod() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onGet("/foo").doReturn("get");
+        httpClientMock.onPost("/foo").doReturn("post");
+        httpClientMock.onPut("/foo").doReturn("put");
+        httpClientMock.onDelete("/foo").doReturn("delete");
+        httpClientMock.onHead("/foo").doReturn("head");
+        httpClientMock.onOptions("/foo").doReturn("options");
+        httpClientMock.onPatch("/foo").doReturn("patch");
+
+        var getResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        var postResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).POST(noBody()).build(), ofString());
+        var putResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).PUT(noBody()).build(), ofString());
+        var deleteResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).DELETE().build(), ofString());
+        var headResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).method("HEAD", noBody()).build(), ofString());
+        var optionsResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).method("OPTIONS", noBody()).build(), ofString());
+        var patchResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).method("PATCH", noBody()).build(), ofString());
+
+        assertThat(getResponse, hasContent("get"));
+        assertThat(postResponse, hasContent("post"));
+        assertThat(putResponse, hasContent("put"));
+        assertThat(deleteResponse, hasContent("delete"));
+        assertThat(headResponse, hasContent("head"));
+        assertThat(optionsResponse, hasContent("options"));
+        assertThat(patchResponse, hasContent("patch"));
     }
 }
