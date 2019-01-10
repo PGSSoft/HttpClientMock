@@ -300,4 +300,21 @@ public class HttpClientMockBuilderTest {
         //assertThat(login, hasStatus(404));
         // TODO: Check for exception once implemented
     }
+
+    @Test
+    public void after_reset_number_of_calls_should_be_zero() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onPost("/login").doReturnStatus(200);
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        httpClientMock.reset();
+        httpClientMock.verify().post("/login").notCalled();
+
+        httpClientMock.onPost("/login").doReturnStatus(200);
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        httpClientMock.verify().post("/login").called(2);
+
+    }
 }
