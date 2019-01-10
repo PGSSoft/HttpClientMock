@@ -29,10 +29,8 @@ public final class Rule {
 
     public HttpResponse next() throws Exception {
         final var responseBuilder = new HttpResponseProxy.Builder();
-        for (int i = 0; i < actions.size()-1; i++) {
-            actions.poll().enrichResponse(responseBuilder);
-        }
-        actions.peek().enrichResponse(responseBuilder);
+        final var action = actions.size() > 1 ? actions.poll() : actions.peek();
+        action.enrichResponse(responseBuilder);
         return responseBuilder.build();
     }
 }
