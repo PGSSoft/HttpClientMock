@@ -287,4 +287,17 @@ public class HttpClientMockBuilderTest {
         assertThat(wrong, hasStatus(400));
         assertThat(ok, hasStatus(200));
     }
+
+    @Test
+    public void after_reset_every_call_should_result_in_status_404() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onPost("/login").doReturnStatus(200);
+        httpClientMock.reset();
+
+        //HttpResponse login = httpClientMock.execute(new HttpPost("http://localhost/login"));
+
+        //assertThat(login, hasStatus(404));
+        // TODO: Check for exception once implemented
+    }
 }
