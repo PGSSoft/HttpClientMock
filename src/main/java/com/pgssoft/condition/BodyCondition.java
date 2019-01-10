@@ -17,8 +17,8 @@ public final class BodyCondition implements Condition {
     @Override
     public boolean matches(HttpRequest request) {
         final var subscriber = new PeekSubscriber();
-        request.bodyPublisher().get().subscribe(subscriber);
-        final var str = new String(subscriber.content().array(), StandardCharsets.UTF_8);
-        return matcher.matches(str);
+        request.bodyPublisher().orElseThrow().subscribe(subscriber);
+        final var content = subscriber.content();
+        return content != null && matcher.matches(new String(content.array(), StandardCharsets.UTF_8));
     }
 }

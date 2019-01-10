@@ -4,14 +4,17 @@ import com.pgssoft.condition.Condition;
 import org.junit.Test;
 
 import java.net.URI;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import static com.pgssoft.matchers.HttpResponseMatchers.hasContent;
+import static com.pgssoft.matchers.HttpResponseMatchers.hasStatus;
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertNull;
 
 public class HttpClientMockBuilderTest {
@@ -185,6 +188,24 @@ public class HttpClientMockBuilderTest {
         assertThat(login, hasContent("login"));
         assertThat(search, hasContent("search"));
         assertThat(logout, hasContent("logout"));
+    }
 
+    @Test
+    public void checkBody() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+
+        httpClientMock.onPost("/login")
+                .doReturnStatus(500);
+        httpClientMock.onPost("/login").withBody(containsString("foo"))
+                .doReturnStatus(200);
+
+//        HttpResponse badLogin = httpClientMock.execute(new HttpPost("http://localhost:8080/login"));
+//        HttpResponse correctLogin = httpClientMock.execute(httpPost("http://localhost:8080/login", "foo"));
+
+        final var badLogin = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), ofString());
+        final var correctLogin = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+
+        assertThat(correctLogin, hasStatus(200));
+        assertThat(badLogin, hasStatus(500));
     }
 }
