@@ -333,4 +333,21 @@ public class HttpClientMockBuilderTest {
         assertNull(response);
         // TODO: Check exception once implemented
     }
+
+    @Test
+    public void should_allow_different_host_then_default() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onGet("/login").doReturn("login");
+        httpClientMock.onGet("http://www.google.com").doReturn("google");
+
+        //HttpResponse login = httpClientMock.execute(new HttpGet("http://localhost/login"));
+        //HttpResponse google = httpClientMock.execute(new HttpGet("http://www.google.com"));
+
+        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), ofString());
+        final var google = httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), ofString());
+
+        assertThat(login, hasContent("login"));
+        assertThat(google, hasContent("google"));
+    }
 }
