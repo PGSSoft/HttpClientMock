@@ -2,11 +2,17 @@ package com.pgssoft;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
+import static com.pgssoft.Asserts.assertThrows;
+import static com.pgssoft.matchers.HttpResponseMatchers.hasContent;
 import static com.pgssoft.matchers.HttpResponseMatchers.hasStatus;
+import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 
 public class HttpClientResponseBuilderTest {
@@ -14,10 +20,43 @@ public class HttpClientResponseBuilderTest {
     @Test
     public void should_return_status_404_when_no_rule_matches() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock();
-        //HttpResponse notFound = httpClientMock.execute(new HttpGet("http://localhost/foo"));
-        final var notFound = httpClientMock.send(HttpRequest.newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
-        //assertThat(notFound, hasStatus(404));
+        final var notFound = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
         assertNull(notFound);
         // TODO: Adjust for exception
+    }
+
+    @Test
+    public void should_use_next_action_after_every_call() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onGet("/foo")
+                .doReturn("first")
+                .doReturn("second")
+                .doReturn("third");
+
+        httpClientMock.onGet("/bar")
+                .doReturn("bar")
+                .doReturnStatus(300)
+                .doThrowException(new IOException());
+
+        final var response1 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        final var response2 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        final var response3 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        final var response4 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        final var response5 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+
+        assertThat(response1, hasContent("first"));
+        assertThat(response2, hasContent("second"));
+        assertThat(response3, hasContent("third"));
+        assertThat(response4, hasContent("third"));
+        assertThat(response5, hasContent("third"));
+
+        final var bar1 = httpClientMock.send(newBuilder(URI.create("http://localhost/bar")).GET().build(), ofString());
+        final var bar2 = httpClientMock.send(newBuilder(URI.create("http://localhost/bar")).GET().build(), ofString());
+        assertThat(bar1, hasContent("bar"));
+        assertThat(bar2, hasStatus(300));
+
+        assertThrows(IOException.class, () -> httpClientMock.send(newBuilder(URI.create("http://localhost/bar")).GET().build(), ofString()));
+
     }
 }
