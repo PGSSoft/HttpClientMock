@@ -245,4 +245,26 @@ public class HttpClientMockBuilderTest {
         assertThat(wrong, hasStatus(400));
         assertThat(ok, hasStatus(200));
     }
+
+    @Test
+    public void should_handle_path_with_parameters_and_reference() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onPost("/login?p=1#abc")
+                .doReturnStatus(200);
+
+        // TODO: Check for exceptions on wrong cases once it's implemented
+
+//        HttpResponse wrong1 = httpClientMock.execute(new HttpPost("http://localhost/login"));
+//        HttpResponse wrong2 = httpClientMock.execute(new HttpPost("http://localhost/login?p=1"));
+//        HttpResponse wrong3 = httpClientMock.execute(new HttpPost("http://localhost/login#abc"));
+//        HttpResponse ok = httpClientMock.execute(new HttpPost("http://localhost/login?p=1#abc"));
+
+        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login?p=1#abc")).POST(noBody()).build(), ofString());
+
+//        assertThat(wrong1, hasStatus(404));
+//        assertThat(wrong2, hasStatus(404));
+//        assertThat(wrong3, hasStatus(404));
+        assertThat(ok, hasStatus(200));
+    }
 }
