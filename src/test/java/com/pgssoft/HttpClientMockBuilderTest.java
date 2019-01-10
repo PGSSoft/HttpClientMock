@@ -226,4 +226,23 @@ public class HttpClientMockBuilderTest {
         assertThat(ok, hasStatus(200));
         //assertThat(notFound_2, hasStatus(404));
     }
+
+    @Test
+    public void when_url_contains_reference_it_should_be_added_as_a_separate_condition() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onPost("/login")
+                .doReturnStatus(400);
+        httpClientMock.onPost("/login#abc")
+                .doReturnStatus(200);
+
+        //HttpResponse wrong = httpClientMock.execute(new HttpPost("http://localhost/login"));
+        //HttpResponse ok = httpClientMock.execute(new HttpPost("http://localhost/login#abc"));
+
+        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login#abc")).POST(noBody()).build(), ofString());
+
+        assertThat(wrong, hasStatus(400));
+        assertThat(ok, hasStatus(200));
+    }
 }
