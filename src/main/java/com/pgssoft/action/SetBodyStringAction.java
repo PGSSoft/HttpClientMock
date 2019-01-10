@@ -2,6 +2,8 @@ package com.pgssoft.action;
 
 import com.pgssoft.HttpResponseProxy;
 
+import java.io.IOException;
+
 public final class SetBodyStringAction implements Action {
 
     private final String content;
@@ -11,7 +13,7 @@ public final class SetBodyStringAction implements Action {
     }
 
     @Override
-    public void enrichResponse(HttpResponseProxy.Builder responseBuilder) throws Exception {
+    public void enrichResponse(HttpResponseProxy.Builder responseBuilder) throws IOException {
         responseBuilder.setBody(content);
     }
 }

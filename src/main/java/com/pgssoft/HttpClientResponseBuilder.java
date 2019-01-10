@@ -3,6 +3,7 @@ package com.pgssoft;
 import com.pgssoft.action.*;
 import com.pgssoft.rule.RuleBuilder;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -55,7 +56,7 @@ public final class HttpClientResponseBuilder {
         return new HttpClientResponseBuilder(ruleBuilder);
     }
 
-    public HttpClientResponseBuilder doThrowException(Exception exception) {
+    public HttpClientResponseBuilder doThrowException(IOException exception) {
         ruleBuilder.addAction(new ThrowExceptionAction(exception));
         return new HttpClientResponseBuilder(ruleBuilder);
     }

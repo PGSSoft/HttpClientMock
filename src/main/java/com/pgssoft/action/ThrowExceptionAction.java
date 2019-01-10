@@ -2,16 +2,18 @@ package com.pgssoft.action;
 
 import com.pgssoft.HttpResponseProxy;
 
+import java.io.IOException;
+
 public final class ThrowExceptionAction implements Action {
 
-    private final Exception exception;
+    private final IOException exception;
 
-    public ThrowExceptionAction(Exception exception) {
+    public ThrowExceptionAction(IOException exception) {
         this.exception = exception;
     }
 
     @Override
-    public void enrichResponse(HttpResponseProxy.Builder responseBuilder) throws Exception {
+    public void enrichResponse(HttpResponseProxy.Builder responseBuilder) throws IOException {
         throw exception;
     }
 }
