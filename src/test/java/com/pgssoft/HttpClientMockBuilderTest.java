@@ -208,4 +208,25 @@ public class HttpClientMockBuilderTest {
         assertThat(correctLogin, hasStatus(200));
         assertThat(badLogin, hasStatus(500));
     }
+
+    @Test
+    public void when_url_contains_parameter_it_should_be_added_us_a_separate_condition() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onPost("/login?user=john")
+                .doReturnStatus(400);
+        httpClientMock.onPost("/login?user=john&pass=abc")
+                .doReturnStatus(200);
+
+//        HttpResponse notFound = httpClientMock.execute(new HttpPost("http://localhost/login"));
+//        HttpResponse notFound_2 = httpClientMock.execute(new HttpPost("http://localhost/login?user=john&pass=abc&foo=bar"));
+
+        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login?user=john")).POST(noBody()).build(), ofString());
+        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login?user=john&pass=abc")).POST(noBody()).build(), ofString());
+
+        //assertThat(notFound, hasStatus(404));
+        assertThat(wrong, hasStatus(400));
+        assertThat(ok, hasStatus(200));
+        //assertThat(notFound_2, hasStatus(404));
+    }
 }
