@@ -199,9 +199,6 @@ public class HttpClientMockBuilderTest {
         httpClientMock.onPost("/login").withBody(containsString("foo"))
                 .doReturnStatus(200);
 
-//        HttpResponse badLogin = httpClientMock.execute(new HttpPost("http://localhost:8080/login"));
-//        HttpResponse correctLogin = httpClientMock.execute(httpPost("http://localhost:8080/login", "foo"));
-
         final var badLogin = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), ofString());
         final var correctLogin = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
 
