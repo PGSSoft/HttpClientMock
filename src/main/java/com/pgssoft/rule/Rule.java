@@ -5,6 +5,7 @@ import com.pgssoft.UrlConditions;
 import com.pgssoft.action.Action;
 import com.pgssoft.condition.Condition;
 
+import java.io.IOException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
@@ -27,7 +28,7 @@ public final class Rule {
                 conditions.stream().allMatch(c -> c.matches(request));
     }
 
-    public HttpResponse next() throws Exception {
+    public HttpResponse next() throws IOException {
         final var responseBuilder = new HttpResponseProxy.Builder();
         final var action = actions.size() > 1 ? actions.poll() : actions.peek();
         action.enrichResponse(responseBuilder);

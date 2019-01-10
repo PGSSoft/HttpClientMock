@@ -255,47 +255,23 @@ public final class HttpClientMock extends HttpClient {
 
     @Override
     public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException, InterruptedException {
-        try {
-
-            // TO BE REMOVED
-            //var bodyCondition = new BodyCondition(containsString("123"));
-            //bodyCondition.matches(request);
-
-            // TO BE REMOVED
-            //var actions = new LinkedList<Action>();
-            //actions.add(new SetStatusAction(200));
-            //actions.add(new SetBodyStringAction("123"));
-            //rules.add(new Rule(new UrlConditions(), List.of(), actions));
-
-            synchronized (rulesUnderConstruction) {
-                rules.addAll(
-                        rulesUnderConstruction.stream()
-                                .map(RuleBuilder::build)
-                                .collect(Collectors.toList())
-                );
-                rulesUnderConstruction.clear();
-            }
-
-            requests.add(request);
-
-            final Rule rule = rules.stream()
-                    .filter(r -> r.matches(request))
-                    .reduce((a, b) -> b)
-                    .orElse(null);
-
-            return rule != null ? rule.next() : null;
-
-            /*var subscriber = responseBodyHandler.apply(responseInfo);
-
-            var publisher = new SubmissionPublisher<List<ByteBuffer>>();
-            publisher.subscribe(subscriber);
-            publisher.submit(List.of(ByteBuffer.wrap(new byte[] {'a', 'l', 'a'})));
-            publisher.close();
-
-            return new HttpResponseMock(subscriber.getBody().toCompletableFuture().get(), headers);*/
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+        synchronized (rulesUnderConstruction) {
+            rules.addAll(
+                    rulesUnderConstruction.stream()
+                            .map(RuleBuilder::build)
+                            .collect(Collectors.toList())
+            );
+            rulesUnderConstruction.clear();
         }
+
+        requests.add(request);
+
+        final Rule rule = rules.stream()
+                .filter(r -> r.matches(request))
+                .reduce((a, b) -> b)
+                .orElse(null);
+
+        return rule != null ? rule.next() : null;
     }
 
     @Override
