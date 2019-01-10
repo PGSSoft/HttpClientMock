@@ -267,4 +267,24 @@ public class HttpClientMockBuilderTest {
 //        assertThat(wrong3, hasStatus(404));
         assertThat(ok, hasStatus(200));
     }
+
+    @Test
+    public void should_check_reference_value() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onPost("/login")
+                .doReturnStatus(400);
+        httpClientMock.onPost("/login")
+                .withReference("ref")
+                .doReturnStatus(200);
+
+        //HttpResponse wrong = httpClientMock.execute(new HttpPost("http://localhost/login"));
+        //HttpResponse ok = httpClientMock.execute(new HttpPost("http://localhost/login#ref"));
+
+        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login#ref")).POST(noBody()).build(), ofString());
+
+        assertThat(wrong, hasStatus(400));
+        assertThat(ok, hasStatus(200));
+    }
 }
