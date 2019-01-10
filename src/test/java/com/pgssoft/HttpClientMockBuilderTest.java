@@ -317,4 +317,20 @@ public class HttpClientMockBuilderTest {
         httpClientMock.verify().post("/login").called(2);
 
     }
+
+    @Test
+    public void not_all_parameters_occurred() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onPost("/login")
+                .withParameter("foo", "bar")
+                .doReturnStatus(200);
+
+        //HttpResponse response = httpClientMock.execute(new HttpPost("http://localhost/login"));
+        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+
+        //assertThat(response, hasStatus(404));
+        assertNull(response);
+        // TODO: Check exception once implemented
+    }
 }
