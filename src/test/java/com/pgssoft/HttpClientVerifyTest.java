@@ -9,6 +9,8 @@ import java.net.http.HttpRequest;
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
+import static java.net.http.HttpResponse.BodyHandlers.ofString;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 public class HttpClientVerifyTest {
@@ -73,5 +75,20 @@ public class HttpClientVerifyTest {
         httpClientMock.verify().get("http://localhost").called();
         httpClientMock.verify().get("http://www.google.com").called(2);
         httpClientMock.verify().get("http://example.com").called(3);
+    }
+
+    @Test
+    public void shouldVerifyBodyContent() throws Exception {
+        final HttpClientMock httpClientMock = new HttpClientMock();
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("bar")).build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+
+        httpClientMock.verify().post("http://localhost").withBody(containsString("foo")).called(2);
+        httpClientMock.verify().put("http://localhost").withBody(containsString("bar")).called();
+        httpClientMock.verify().get("http://localhost").withBody(containsString("foo bar")).notCalled();
     }
 }
