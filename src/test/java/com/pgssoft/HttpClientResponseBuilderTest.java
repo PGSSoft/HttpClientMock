@@ -149,7 +149,6 @@ public class HttpClientResponseBuilderTest {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onGet("/login")
                 .doReturn("foo").withStatus(300);
-        //HttpResponse login = httpClientMock.execute(httpGet("http://localhost:8080/login"));
 
         final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
 
@@ -163,7 +162,6 @@ public class HttpClientResponseBuilderTest {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onGet("/login")
                 .doReturnJSON("{foo:1}", Charset.forName("UTF-8"));
-        //HttpResponse login = httpClientMock.execute(httpGet("http://localhost:8080/login"));
 
         final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
 
@@ -176,7 +174,6 @@ public class HttpClientResponseBuilderTest {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onGet("/login")
                 .doReturnXML("<foo>bar</foo>", Charset.forName("UTF-8"));
-        //HttpResponse login = httpClientMock.execute(httpGet("http://localhost:8080/login"));
 
         final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
 
@@ -192,7 +189,6 @@ public class HttpClientResponseBuilderTest {
         httpClientMock.onGet("/login")
                 .doReturnStatus(204);   // no content
 
-        //HttpResponse login = httpClientMock.execute(httpGet("http://localhost:8080/login"));
         final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
 
         assertNull(login.body());
@@ -205,7 +201,6 @@ public class HttpClientResponseBuilderTest {
                 .withBody(equalTo("Body content"))
                 .doReturnStatus(200);
 
-        //HttpResponse response = httpClientMock.execute(httpGet("http://localhost:8080/path2"));
         final var response = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/path2")).GET().build(), discarding());
 
         assertNull(response);   // TODO: Catch exception instead, once it's implemented
