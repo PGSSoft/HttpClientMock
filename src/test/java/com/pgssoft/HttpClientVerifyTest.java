@@ -150,4 +150,18 @@ public class HttpClientVerifyTest {
         httpClientMock.verify().get("/login").called();
         httpClientMock.verify().get("http://www.google.com").called();
     }
+
+    @Test
+    public void should_check_header() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+
+        httpClientMock.onGet("/login").doReturn("OK");
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().header("User-Agent", "Chrome").build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().header("User-Agent", "Mozilla").build(), discarding());
+
+        httpClientMock.verify().get("/login").withHeader("User-Agent", "Mozilla").called();
+        httpClientMock.verify().get("/login").withHeader("User-Agent", "Chrome").called();
+        httpClientMock.verify().get("/login").withHeader("User-Agent", "IE").notCalled();
+    }
 }
