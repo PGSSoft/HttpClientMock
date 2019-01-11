@@ -198,6 +198,19 @@ public class HttpClientResponseBuilderTest {
         assertNull(login.body());
     }
 
+    @Test
+    public void should_not_throw_exception_when_body_matcher_is_present_on_post_request() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+        httpClientMock.onPost("/path1")
+                .withBody(equalTo("Body content"))
+                .doReturnStatus(200);
+
+        //HttpResponse response = httpClientMock.execute(httpGet("http://localhost:8080/path2"));
+        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/path2")).GET().build(), discarding());
+
+        assertNull(response);   // TODO: Catch exception instead, once it's implemented
+    }
+
     private Action customAction() {
         return r -> {
             r.setBody("I am a custom action");
