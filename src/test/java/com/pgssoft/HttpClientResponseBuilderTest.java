@@ -97,6 +97,22 @@ public class HttpClientResponseBuilderTest {
             httpClientMock.onGet("/foo").doThrowException(new IOException());
             httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo")).GET().build(), discarding());
         });
+    }
 
+    @Test
+    public void should_return_status_corresponding_to_match() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+
+        httpClientMock.onGet("/login").doReturnStatus(200);
+        httpClientMock.onGet("/abc").doReturnStatus(404);
+        httpClientMock.onGet("/error").doReturnStatus(500);
+
+        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), discarding());
+        final var notFound = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/abc")).GET().build(), discarding());
+        final var error = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/error")).GET().build(), discarding());
+
+        assertThat(ok, hasStatus(200));
+        assertThat(notFound, hasStatus(404));
+        assertThat(error, hasStatus(500));
     }
 }
