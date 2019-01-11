@@ -26,7 +26,12 @@ public final class RuleBuilder {
     }
 
     public void addAction(Action action) {
-        actionBundles.peekLast().add(action);
+        var bundle = actionBundles.peekLast();
+        if (bundle == null) {
+            bundle = new ActionBundle();
+            actionBundles.add(bundle);
+        }
+        bundle.add(action);
     }
 
     public void addActionBundle(Action action) {
