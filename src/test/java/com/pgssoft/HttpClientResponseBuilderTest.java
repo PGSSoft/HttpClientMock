@@ -1,5 +1,6 @@
 package com.pgssoft;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import static com.pgssoft.Asserts.assertThrows;
 import static com.pgssoft.matchers.HttpResponseMatchers.hasContent;
 import static com.pgssoft.matchers.HttpResponseMatchers.hasStatus;
 import static java.net.http.HttpRequest.newBuilder;
+import static java.net.http.HttpResponse.BodyHandlers.discarding;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -86,5 +88,15 @@ public class HttpClientResponseBuilderTest {
         assertThat(response4, hasStatus(400));
         assertThat(response5, hasContent("third"));
         assertThat(response5, hasStatus(400));
+    }
+
+    @Test
+    public void should_throw_exception_when_throwing_action_matched() throws IOException {
+        Assertions.assertThrows(IOException.class, () -> {
+            HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+            httpClientMock.onGet("/foo").doThrowException(new IOException());
+            httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo")).GET().build(), discarding());
+        });
+
     }
 }
