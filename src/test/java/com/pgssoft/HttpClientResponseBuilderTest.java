@@ -18,6 +18,7 @@ import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class HttpClientResponseBuilderTest {
@@ -127,6 +128,20 @@ public class HttpClientResponseBuilderTest {
 
         assertThat(response, hasContent("I am a custom action"));
 
+    }
+
+    @Test
+    public void should_add_header_to_response() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+        httpClientMock.onPost("/login")
+                .doReturn("foo").withHeader("tracking", "123")
+                .doReturn("foo").withHeader("tracking", "456");
+
+        final var first = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), ofString());
+        final var second = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), ofString());
+
+        assertThat(first.headers().firstValue("tracking").orElse(null), equalTo("123"));
+        assertThat(second.headers().firstValue("tracking").orElse(null), equalTo("456"));
     }
 
     private Action customAction() {
