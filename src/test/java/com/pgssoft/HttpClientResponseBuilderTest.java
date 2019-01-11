@@ -1,5 +1,6 @@
 package com.pgssoft;
 
+import com.pgssoft.action.Action;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,7 @@ import java.nio.charset.Charset;
 import static com.pgssoft.Asserts.assertThrows;
 import static com.pgssoft.matchers.HttpResponseMatchers.hasContent;
 import static com.pgssoft.matchers.HttpResponseMatchers.hasStatus;
+import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
@@ -114,5 +116,22 @@ public class HttpClientResponseBuilderTest {
         assertThat(ok, hasStatus(200));
         assertThat(notFound, hasStatus(404));
         assertThat(error, hasStatus(500));
+    }
+
+    @Test
+    public void should_do_custom_action() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+        httpClientMock.onPost("/login").doAction(customAction());
+
+        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), ofString());
+
+        assertThat(response, hasContent("I am a custom action"));
+
+    }
+
+    private Action customAction() {
+        return r -> {
+            r.setBody("I am a custom action");
+        };
     }
 }
