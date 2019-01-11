@@ -1,7 +1,8 @@
 package com.pgssoft;
 
 import com.pgssoft.condition.Condition;
-import org.junit.Test;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -13,9 +14,11 @@ import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 public class HttpClientMockBuilderTest {
 
@@ -72,7 +75,7 @@ public class HttpClientMockBuilderTest {
 
         assertThat(firstResponse, hasContent("one"));
         assertThat(secondResponse, hasContent("two"));
-        assertNull(thirdResponse);
+        assertThat(thirdResponse, is(nullValue()));
     }
 
     @Test
@@ -330,7 +333,7 @@ public class HttpClientMockBuilderTest {
         final var response = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
 
         //assertThat(response, hasStatus(404));
-        assertNull(response);
+        assertThat(response, is(nullValue()));
         // TODO: Check exception once implemented
     }
 
