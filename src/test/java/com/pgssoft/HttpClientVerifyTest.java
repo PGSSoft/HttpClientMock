@@ -9,6 +9,7 @@ import java.net.http.HttpRequest;
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 public class HttpClientVerifyTest {
 
@@ -32,5 +33,27 @@ public class HttpClientVerifyTest {
         httpClientMock.verify().options("http://localhost").called();
         httpClientMock.verify().head("http://localhost").called();
         httpClientMock.verify().patch("http://localhost").called();
+    }
+
+    @Test
+    public void shouldCountNumberOfHttpMethodCalls() throws Exception {
+        final HttpClientMock httpClientMock = new HttpClientMock();
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+
+        httpClientMock.verify().get("http://localhost").called();
+        httpClientMock.verify().post("http://localhost").called(2);
+        httpClientMock.verify().delete("http://localhost").called(3);
+
+        httpClientMock.verify().get().called(greaterThanOrEqualTo(1));
+        httpClientMock.verify().post().called(greaterThanOrEqualTo(1));
+        httpClientMock.verify().delete().called(greaterThanOrEqualTo(1));
     }
 }
