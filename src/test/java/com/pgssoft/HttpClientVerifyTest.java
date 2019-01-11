@@ -1,5 +1,6 @@
 package com.pgssoft;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -121,5 +122,18 @@ public class HttpClientVerifyTest {
         httpClientMock.verify().post("http://localhost#abc").notCalled();
         httpClientMock.verify().post("http://localhost#xyz").called(1);
         httpClientMock.verify().post("http://localhost").notCalled();
+    }
+
+    @Test
+    public void should_throw_exception_when_number_of_calls_is_wrong() throws IOException {
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            HttpClientMock httpClientMock = new HttpClientMock();
+
+            httpClientMock.send(newBuilder(URI.create("http://localhost?a=1")).POST(noBody()).build(), discarding());
+
+            httpClientMock.verify()
+                    .post("http://localhost?a=1#abc")
+                    .called(2);
+        });
     }
 }
