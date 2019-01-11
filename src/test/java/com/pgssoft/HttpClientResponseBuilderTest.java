@@ -171,6 +171,19 @@ public class HttpClientResponseBuilderTest {
         assertThat(login.headers().firstValue("Content-type").orElse(null), equalTo("application/json"));
     }
 
+    @Test
+    public void should_return_xml_with_right_header() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+        httpClientMock.onGet("/login")
+                .doReturnXML("<foo>bar</foo>", Charset.forName("UTF-8"));
+        //HttpResponse login = httpClientMock.execute(httpGet("http://localhost:8080/login"));
+
+        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
+
+        assertThat(login, hasContent("<foo>bar</foo>"));
+        assertThat(login.headers().firstValue("Content-type").orElse(null), equalTo("application/xml"));
+    }
+
     private Action customAction() {
         return r -> {
             r.setBody("I am a custom action");
