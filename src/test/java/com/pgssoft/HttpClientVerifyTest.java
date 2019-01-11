@@ -127,7 +127,7 @@ public class HttpClientVerifyTest {
     @Test
     public void should_throw_exception_when_number_of_calls_is_wrong() throws IOException {
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            HttpClientMock httpClientMock = new HttpClientMock();
+            final HttpClientMock httpClientMock = new HttpClientMock();
 
             httpClientMock.send(newBuilder(URI.create("http://localhost?a=1")).POST(noBody()).build(), discarding());
 
@@ -139,7 +139,7 @@ public class HttpClientVerifyTest {
 
     @Test
     public void should_allow_different_host_then_default() throws Exception {
-        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+        final HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onGet("/login").doReturn("login");
         httpClientMock.onGet("http://www.google.com").doReturn("google");
@@ -153,7 +153,7 @@ public class HttpClientVerifyTest {
 
     @Test
     public void should_check_header() throws Exception {
-        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+        final HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
 
         httpClientMock.onGet("/login").doReturn("OK");
 
