@@ -184,6 +184,20 @@ public class HttpClientResponseBuilderTest {
         assertThat(login.headers().firstValue("Content-type").orElse(null), equalTo("application/xml"));
     }
 
+    @Test
+    public void should_not_set_response_entity_when_status_is_no_content() throws Exception {
+        /* Not sure I understand the point of this test   ~rskupnik */
+
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+        httpClientMock.onGet("/login")
+                .doReturnStatus(204);   // no content
+
+        //HttpResponse login = httpClientMock.execute(httpGet("http://localhost:8080/login"));
+        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
+
+        assertNull(login.body());
+    }
+
     private Action customAction() {
         return r -> {
             r.setBody("I am a custom action");
