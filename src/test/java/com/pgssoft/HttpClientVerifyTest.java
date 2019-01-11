@@ -91,4 +91,22 @@ public class HttpClientVerifyTest {
         httpClientMock.verify().put("http://localhost").withBody(containsString("bar")).called();
         httpClientMock.verify().get("http://localhost").withBody(containsString("foo bar")).notCalled();
     }
+
+    @Test
+    public void should_handle_path_with_query_parameter() throws Exception {
+        final HttpClientMock httpClientMock = new HttpClientMock();
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost?a=1&b=2&c=3")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost?a=1&b=2")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost?a=1")).POST(noBody()).build(), discarding());
+
+        httpClientMock.verify().post("http://localhost?d=3").notCalled();
+        httpClientMock.verify().post("http://localhost?a=3").notCalled();
+        httpClientMock.verify().post("http://localhost?a=1&b=2&c=3").called(1);
+        httpClientMock.verify().post("http://localhost?a=1&b=2").called(1);
+        httpClientMock.verify().post("http://localhost?a=1").called(1);
+        httpClientMock.verify().post("http://localhost").withParameter("a", "1").called(1);
+
+        httpClientMock.verify().post("http://localhost").notCalled();
+    }
 }
