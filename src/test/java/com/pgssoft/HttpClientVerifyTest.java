@@ -109,4 +109,17 @@ public class HttpClientVerifyTest {
 
         httpClientMock.verify().post("http://localhost").notCalled();
     }
+
+    @Test
+    public void should_handle_path_with_reference() throws Exception {
+        final HttpClientMock httpClientMock = new HttpClientMock();
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost?a=1#abc")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost#xyz")).POST(noBody()).build(), discarding());
+
+        httpClientMock.verify().post("http://localhost?a=1#abc").called(1);
+        httpClientMock.verify().post("http://localhost#abc").notCalled();
+        httpClientMock.verify().post("http://localhost#xyz").called(1);
+        httpClientMock.verify().post("http://localhost").notCalled();
+    }
 }
