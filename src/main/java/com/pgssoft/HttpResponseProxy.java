@@ -6,10 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class HttpResponseProxy<T> implements HttpResponse<T> {
 
@@ -66,7 +63,7 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
     public final static class Builder {
 
         private int statusCode;
-        private Map<String, List<String>> headers = Map.of();
+        private Map<String, List<String>> headers = new HashMap<>();
         private Object body;
 
         public int getStatusCode() {
