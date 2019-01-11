@@ -144,6 +144,20 @@ public class HttpClientResponseBuilderTest {
         assertThat(second.headers().firstValue("tracking").orElse(null), equalTo("456"));
     }
 
+    @Test
+    public void should_add_status_to_response() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+        httpClientMock.onGet("/login")
+                .doReturn("foo").withStatus(300);
+        //HttpResponse login = httpClientMock.execute(httpGet("http://localhost:8080/login"));
+
+        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
+
+        assertThat(login, hasContent("foo"));
+        assertThat(login, hasStatus(300));
+
+    }
+
     private Action customAction() {
         return r -> {
             r.setBody("I am a custom action");
