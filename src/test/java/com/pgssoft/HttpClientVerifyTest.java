@@ -56,4 +56,22 @@ public class HttpClientVerifyTest {
         httpClientMock.verify().post().called(greaterThanOrEqualTo(1));
         httpClientMock.verify().delete().called(greaterThanOrEqualTo(1));
     }
+
+    @Test
+    public void shouldCountNumberOfUrlCalls() throws Exception {
+        final HttpClientMock httpClientMock = new HttpClientMock();
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
+
+        httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
+
+        httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
+
+        httpClientMock.verify().get("http://localhost").called();
+        httpClientMock.verify().get("http://www.google.com").called(2);
+        httpClientMock.verify().get("http://example.com").called(3);
+    }
 }
