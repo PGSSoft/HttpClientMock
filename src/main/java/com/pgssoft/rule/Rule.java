@@ -31,8 +31,6 @@ public final class Rule {
 
     public HttpResponse next() throws IOException {
         final var responseBuilder = new HttpResponseProxy.Builder();
-        //final var action = actions.size() > 1 ? actions.poll() : actions.peek();
-        //action.enrichResponse(responseBuilder);
 
         final var actionBundle = actionBundles.size() > 1 ? actionBundles.poll() : actionBundles.peek();
         for (Action a : actionBundle) {
