@@ -40,24 +40,23 @@ public final class HttpClientResponseBuilder {
     }
 
     public HttpClientResponseBuilder doReturn(String response, Charset charset) {
-        ruleBuilder.addAction(new SetBodyStringAction(response)); // TODO: Include charset
-        return new HttpClientResponseBuilder(ruleBuilder);
+        return doReturn(200, response, charset);
     }
 
     public HttpClientResponseBuilder doReturn(int statusCode, String response, Charset charset) {
         //ruleBuilder.addAction(new SetBodyStringAction(statusCode, response)); // TODO: Include charset and statusCode
-        ruleBuilder.addAction(new SetBodyStringAction(response));
+        ruleBuilder.addActionBundle(new SetBodyStringAction(response));
         ruleBuilder.addAction(new SetStatusAction(statusCode));
         return new HttpClientResponseBuilder(ruleBuilder);
     }
 
     public HttpClientResponseBuilder doReturnStatus(int statusCode) {
-        ruleBuilder.addAction(new SetStatusAction(statusCode));
+        ruleBuilder.addActionBundle(new SetStatusAction(statusCode));
         return new HttpClientResponseBuilder(ruleBuilder);
     }
 
     public HttpClientResponseBuilder doThrowException(IOException exception) {
-        ruleBuilder.addAction(new ThrowExceptionAction(exception));
+        ruleBuilder.addActionBundle(new ThrowExceptionAction(exception));
         return new HttpClientResponseBuilder(ruleBuilder);
     }
 

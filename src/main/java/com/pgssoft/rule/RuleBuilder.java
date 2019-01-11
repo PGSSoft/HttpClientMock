@@ -2,18 +2,16 @@ package com.pgssoft.rule;
 
 import com.pgssoft.UrlConditions;
 import com.pgssoft.action.Action;
+import com.pgssoft.action.ActionBundle;
 import com.pgssoft.condition.Condition;
 import com.pgssoft.condition.MethodCondition;
 import org.hamcrest.Matcher;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public final class RuleBuilder {
 
-    private final Queue<Action> actions = new LinkedList<>();
+    private final Deque<ActionBundle> actionBundles = new LinkedList<>();
     private final List<Condition> conditions = new ArrayList<>();
     private final UrlConditions urlConditions = new UrlConditions();
 
@@ -28,7 +26,13 @@ public final class RuleBuilder {
     }
 
     public void addAction(Action action) {
-        actions.add(action);
+        actionBundles.peekLast().add(action);
+    }
+
+    public void addActionBundle(Action action) {
+        final var bundle = new ActionBundle();
+        bundle.add(action);
+        actionBundles.add(bundle);
     }
 
     public void addCondition(Condition condition) {
@@ -61,11 +65,7 @@ public final class RuleBuilder {
         addUrlConditions(conditions);
     }
 
-    public Action getLastAction() {
-        return actions.peek();
-    }
-
     public Rule build() {
-        return new Rule(urlConditions, conditions, actions);
+        return new Rule(urlConditions, conditions, actionBundles);
     }
 }

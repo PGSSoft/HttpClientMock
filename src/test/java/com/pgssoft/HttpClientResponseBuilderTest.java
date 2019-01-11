@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
 
 import static com.pgssoft.Asserts.assertThrows;
 import static com.pgssoft.matchers.HttpResponseMatchers.hasContent;
@@ -58,5 +59,32 @@ public class HttpClientResponseBuilderTest {
 
         assertThrows(IOException.class, () -> httpClientMock.send(newBuilder(URI.create("http://localhost/bar")).GET().build(), ofString()));
 
+    }
+
+    @Test
+    public void should_support_response_in_body_with_status() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onGet("/foo")
+                .doReturn("first")
+                .doReturn(300, "second")
+                .doReturn(400, "third");
+
+        final var response1 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        final var response2 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        final var response3 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        final var response4 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        final var response5 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+
+        assertThat(response1, hasContent("first"));
+        assertThat(response1, hasStatus(200));
+        assertThat(response2, hasContent("second"));
+        assertThat(response2, hasStatus(300));
+        assertThat(response3, hasContent("third"));
+        assertThat(response3, hasStatus(400));
+        assertThat(response4, hasContent("third"));
+        assertThat(response4, hasStatus(400));
+        assertThat(response5, hasContent("third"));
+        assertThat(response5, hasStatus(400));
     }
 }
