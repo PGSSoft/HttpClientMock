@@ -39,6 +39,23 @@ public class DebuggerTest {
         assertThat(debugger.requests, not(hasItem("http://localhost/admin")));
     }
 
+    @Test
+    public void should_print_all_request_when_debugging_is_turn_on() throws Exception {
+        httpClientMock.onGet("/login").doReturn("login");
+        httpClientMock.onGet("/user").doReturn("user");
+        httpClientMock.onGet("/admin").doReturn("admin");
+
+        httpClientMock.debugOn();
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost/user")).GET().build(), discarding());
+        httpClientMock.debugOff();
+        httpClientMock.send(newBuilder(URI.create("http://localhost/admin")).GET().build(), discarding());
+
+        assertThat(debugger.requests, hasItem("http://localhost/login"));
+        assertThat(debugger.requests, hasItem("http://localhost/user"));
+        assertThat(debugger.requests, not(hasItem("http://localhost/admin")));
+    }
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
