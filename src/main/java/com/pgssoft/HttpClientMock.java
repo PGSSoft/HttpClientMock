@@ -4,6 +4,7 @@ import com.pgssoft.action.Action;
 import com.pgssoft.action.SetBodyStringAction;
 import com.pgssoft.action.SetStatusAction;
 import com.pgssoft.condition.BodyCondition;
+import com.pgssoft.debug.Debugger;
 import com.pgssoft.rule.Rule;
 import com.pgssoft.rule.RuleBuilder;
 
@@ -30,17 +31,37 @@ import static org.hamcrest.Matchers.containsString;
 
 public final class HttpClientMock extends HttpClient {
 
+    private final Debugger debugger;
     private final List<Rule> rules = new ArrayList<>();
     private final List<RuleBuilder> rulesUnderConstruction = new ArrayList<>();
     private final String host;
     private final List<HttpRequest> requests = new ArrayList<>();
 
+    private boolean debuggingOn;
+
     public HttpClientMock() {
         this("");
     }
 
+    /**
+     * Creates mock of HttpClient with default host. All defined conditions without host will use default host
+     *
+     * @param host default host for later conditions
+     */
     public HttpClientMock(String host) {
         this.host = host;
+        this.debugger = new Debugger();
+    }
+
+    /**
+     * Creates mock of HttpClient with default host. All defined conditions without host will use default host
+     *
+     * @param host default host for later conditions
+     * @param debugger    debugger used for testing
+     */
+    public HttpClientMock(String host, Debugger debugger) {
+        this.host = host;
+        this.debugger = debugger;
     }
 
     /**
@@ -271,6 +292,10 @@ public final class HttpClientMock extends HttpClient {
                 .reduce((a, b) -> b)
                 .orElse(null);
 
+        if (debuggingOn || rule == null) {
+            debugger.debug(rules, request);
+        }
+
         return rule != null ? rule.next() : null;
     }
 
@@ -282,5 +307,13 @@ public final class HttpClientMock extends HttpClient {
     @Override
     public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler, HttpResponse.PushPromiseHandler<T> pushPromiseHandler) {
         return null;
+    }
+
+    public void debugOn() {
+        debuggingOn = true;
+    }
+
+    public void debugOff() {
+        debuggingOn = false;
     }
 }

@@ -5,6 +5,7 @@ import com.pgssoft.UrlConditions;
 import com.pgssoft.action.Action;
 import com.pgssoft.action.ActionBundle;
 import com.pgssoft.condition.Condition;
+import com.pgssoft.debug.Debugger;
 
 import java.io.IOException;
 import java.net.http.HttpRequest;
@@ -38,5 +39,12 @@ public final class Rule {
         }
 
         return responseBuilder.build();
+    }
+
+    public void debug(HttpRequest request, Debugger debugger) {
+        for (Condition condition : conditions) {
+            condition.debug(request, debugger);
+        }
+        urlConditions.debug(request, debugger);
     }
 }
