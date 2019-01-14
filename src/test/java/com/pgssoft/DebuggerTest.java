@@ -174,6 +174,17 @@ public class DebuggerTest {
         assertTrue(debugger.notMatching.contains("port is <8080>"));
     }
 
+    @Test
+    public void should_put_message_about_matching_URL() throws Exception {
+        httpClientMock.onGet("http://localhost:8080/login").doReturn("login");
+        httpClientMock.debugOn();
+        httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), discarding());
+        assertTrue(debugger.matching.contains("schema is \"http\""));
+        assertTrue(debugger.matching.contains("host is \"localhost\""));
+        assertTrue(debugger.matching.contains("path is \"/login\""));
+        assertTrue(debugger.matching.contains("port is <8080>"));
+    }
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
