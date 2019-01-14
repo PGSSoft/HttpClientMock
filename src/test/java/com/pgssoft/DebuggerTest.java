@@ -137,6 +137,15 @@ public class DebuggerTest {
         assertTrue(debugger.matching.contains("reference is \"foo\""));
     }
 
+    @Test
+    public void should_not_put_message_about_reference_when_it_is_not_used() throws Exception {
+        httpClientMock.onGet("/login").doReturn("login");
+        httpClientMock.debugOn();
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
+        assertTrue(debugger.matching.stream().noneMatch(s -> s.startsWith("reference")));
+        assertTrue(debugger.notMatching.stream().noneMatch(s -> s.startsWith("reference")));
+    }
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
