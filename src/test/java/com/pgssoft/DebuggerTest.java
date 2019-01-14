@@ -91,6 +91,15 @@ public class DebuggerTest {
         assertTrue(debugger.matching.contains("parameter foo is \"bar\""));
     }
 
+    @Test
+    public void should_put_message_about_not_matching_parameter() throws Exception {
+        httpClientMock.onGet("/login")
+                .withParameter("foo", "bar")
+                .doReturn("login");
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=bbb")).GET().build(), discarding());
+        assertTrue(debugger.notMatching.contains("parameter foo is \"bar\""));
+    }
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
