@@ -12,6 +12,7 @@ import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
@@ -152,6 +153,14 @@ public class DebuggerTest {
         httpClientMock.debugOn();
         httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
         assertTrue(debugger.matching.contains("HTTP method is GET"));
+    }
+
+    @Test
+    public void should_put_message_about_not_matching_http_method() throws Exception {
+        httpClientMock.onGet("/login").doReturn("login");
+        httpClientMock.debugOn();
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
+        assertTrue(debugger.notMatching.contains("HTTP method is GET"));
     }
 
     private class TestDebugger extends Debugger {
