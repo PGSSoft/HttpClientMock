@@ -100,6 +100,14 @@ public class DebuggerTest {
         assertTrue(debugger.notMatching.contains("parameter foo is \"bar\""));
     }
 
+    @Test
+    public void should_put_message_about_redundant_parameter() throws Exception {
+        httpClientMock.onGet("/login")
+                .doReturn("login");
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=bbb")).GET().build(), discarding());
+        assertTrue(debugger.notMatching.contains("parameter foo is redundant"));
+    }
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
