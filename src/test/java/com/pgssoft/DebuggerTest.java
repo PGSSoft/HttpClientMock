@@ -2,6 +2,7 @@ package com.pgssoft;
 
 import com.pgssoft.debug.Debugger;
 import com.pgssoft.rule.Rule;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -106,6 +107,17 @@ public class DebuggerTest {
                 .doReturn("login");
         httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=bbb")).GET().build(), discarding());
         assertTrue(debugger.notMatching.contains("parameter foo is redundant"));
+    }
+
+    @Test
+    public void should_put_message_with_all_parameter_matchers() throws Exception {
+        httpClientMock.onGet("/login")
+                .withParameter("foo", Matchers.startsWith("a"))
+                .withParameter("foo", Matchers.endsWith("b"))
+                .doReturn("login");
+        httpClientMock.debugOn();
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=aabb")).GET().build(), discarding());
+        assertTrue(debugger.matching.contains("parameter foo is a string starting with \"a\" and a string ending with \"b\""));
     }
 
     private class TestDebugger extends Debugger {
