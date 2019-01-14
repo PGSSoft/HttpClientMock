@@ -146,6 +146,14 @@ public class DebuggerTest {
         assertTrue(debugger.notMatching.stream().noneMatch(s -> s.startsWith("reference")));
     }
 
+    @Test
+    public void should_put_message_about_matching_http_method() throws Exception {
+        httpClientMock.onGet("/login").doReturn("login");
+        httpClientMock.debugOn();
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
+        assertTrue(debugger.matching.contains("HTTP method is GET"));
+    }
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
