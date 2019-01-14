@@ -74,6 +74,13 @@ public class DebuggerTest {
         assertFalse(debugger.notMatching.contains("header User-Agent is \"Chrome\""));
     }
 
+    @Test
+    public void should_put_message_about_missing_parameter() throws Exception {
+        httpClientMock.onGet("/login").withParameter("foo", "bar");
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
+        assertTrue(debugger.notMatching.contains("parameter foo occurs in request"));
+    }
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
