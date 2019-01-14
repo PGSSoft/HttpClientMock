@@ -6,6 +6,7 @@ import org.hamcrest.Matcher;
 
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 public final class BodyCondition implements Condition {
 
@@ -17,6 +18,11 @@ public final class BodyCondition implements Condition {
 
     @Override
     public boolean matches(HttpRequest request) {
+        final Optional<HttpRequest.BodyPublisher> bodyPublisher = request.bodyPublisher();
+        if (bodyPublisher.isEmpty()) {
+            return matcher.matches(null);
+        }
+
         final var subscriber = new PeekSubscriber();
         request.bodyPublisher().orElseThrow().subscribe(subscriber);
         final var content = subscriber.content();
