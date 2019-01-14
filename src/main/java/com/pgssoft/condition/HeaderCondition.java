@@ -1,6 +1,8 @@
 package com.pgssoft.condition;
 
+import com.pgssoft.debug.Debugger;
 import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
 
 import java.net.http.HttpRequest;
 import java.util.Objects;
@@ -21,5 +23,10 @@ public final class HeaderCondition implements Condition {
                 .stream()
                 .filter(Objects::nonNull)
                 .anyMatch(expectedValue::matches);
+    }
+
+    @Override
+    public void debug(HttpRequest request, Debugger debugger) {
+        debugger.message(matches(request), "header " + header + " is " + StringDescription.toString(expectedValue));
     }
 }

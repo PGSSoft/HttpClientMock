@@ -1,6 +1,7 @@
 package com.pgssoft.condition;
 
 import com.pgssoft.PeekSubscriber;
+import com.pgssoft.debug.Debugger;
 import org.hamcrest.Matcher;
 
 import java.net.http.HttpRequest;
@@ -20,5 +21,10 @@ public final class BodyCondition implements Condition {
         request.bodyPublisher().orElseThrow().subscribe(subscriber);
         final var content = subscriber.content();
         return content != null && matcher.matches(new String(content.array(), StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public void debug(HttpRequest request, Debugger debugger) {
+        debugger.message(matches(request), "body matches");
     }
 }
