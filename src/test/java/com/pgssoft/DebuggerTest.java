@@ -128,6 +128,15 @@ public class DebuggerTest {
         assertTrue(debugger.notMatching.contains("reference is \"foo\""));
     }
 
+    @Test
+    public void should_put_message_about_matching_reference() throws Exception {
+        httpClientMock.onGet("/login#foo")
+                .doReturn("login");
+        httpClientMock.debugOn();
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login#foo")).GET().build(), discarding());
+        assertTrue(debugger.matching.contains("reference is \"foo\""));
+    }
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
