@@ -13,9 +13,12 @@ import java.util.List;
 
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
+import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DebuggerTest {
 
@@ -56,6 +59,21 @@ public class DebuggerTest {
         assertThat(debugger.requests, not(hasItem("http://localhost/admin")));
     }
 
+    @Test
+    public void should_debug_header_condition() throws Exception {
+        httpClientMock
+                .onGet("/login").withHeader("User-Agent", "Mozilla")
+                .doReturn("mozilla");
+
+        httpClientMock.debugOn();
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().header("User-Agent", "Mozilla").build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().header("User-Agent", "Chrome").build(), ofString());
+        httpClientMock.debugOff();
+
+        assertTrue(debugger.matching.contains("header User-Agent is \"Mozilla\""));
+        assertFalse(debugger.notMatching.contains("header User-Agent is \"Chrome\""));
+    }
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
@@ -64,6 +82,7 @@ public class DebuggerTest {
         @Override
         public void debug(List<Rule> rules, HttpRequest request) {
             this.requests.add(request.uri().toString());
+            super.debug(rules, request);
         }
 
         @Override
