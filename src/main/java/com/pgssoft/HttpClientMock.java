@@ -292,7 +292,7 @@ public final class HttpClientMock extends HttpClient {
                 .reduce((a, b) -> b)
                 .orElse(null);
 
-        if (debuggingOn) {
+        if (debuggingOn || rule == null) {
             debugger.debug(rules, request);
         }
 
@@ -307,5 +307,13 @@ public final class HttpClientMock extends HttpClient {
     @Override
     public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler, HttpResponse.PushPromiseHandler<T> pushPromiseHandler) {
         return null;
+    }
+
+    public void debugOn() {
+        debuggingOn = true;
+    }
+
+    public void debugOff() {
+        debuggingOn = false;
     }
 }
