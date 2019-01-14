@@ -1,5 +1,6 @@
 package com.pgssoft;
 
+import com.pgssoft.debug.Debugger;
 import com.pgssoft.matchers.MatchersList;
 import com.pgssoft.matchers.MatchersMap;
 import org.hamcrest.Matcher;
@@ -9,6 +10,7 @@ import org.hamcrest.StringDescription;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpRequest;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
@@ -134,6 +136,38 @@ public class UrlConditions {
                 this.parameterConditions.put(paramName, paramValue);
             }
         }
+    }
+
+    public void debug(HttpRequest request, Debugger debugger) {
+        try {
+            URL url = new URL(request.uri().toString());
+            debugger.message(hostConditions.allMatches(url.getHost()), "schema is " + describe(schemaConditions));
+            debugger.message(hostConditions.allMatches(url.getHost()), "host is " + hostConditions.describe());
+            debugger.message(pathConditions.allMatches(url.getPath()), "path is " + pathConditions.describe());
+            debugger.message(portConditions.allMatches(url.getPort()), "port is " + portDebugDescription());
+            if (referenceConditions != isEmptyOrNullString() || !referenceConditions.matches(url.getRef())) {
+                debugger.message(referenceConditions.matches(url.getRef()), "reference is " + describe(referenceConditions));
+            }
+            Set<String> missingParams = findMissingParameters(url.getQuery());
+            for (String param : missingParams) {
+                debugger.message(false, "parameter " + param + " occurs in request");
+            }
+            UrlParams params = UrlParams.parse(url.getQuery());
+            for (KeyValuePair param : params) {
+                if (parameterConditions.containsKey(param.getKey())) {
+                    boolean matches = parameterConditions.matches(param.getKey(), param.getValue());
+                    String message = "parameter " + param.getKey() + " is " + parameterConditions.describe(param.getKey());
+                    debugger.message(matches, message);
+                } else {
+                    String message = "parameter " + param.getKey() + " is redundant";
+                    debugger.message(false, message);
+                }
+            }
+
+        } catch (MalformedURLException e) {
+            System.out.println("Can't parse URL: " + request.uri());
+        }
+
     }
 
     private String describe(Matcher<String> matcher) {
