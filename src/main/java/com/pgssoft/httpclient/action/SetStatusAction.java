@@ -1,6 +1,6 @@
 package com.pgssoft.httpclient.action;
 
-import com.pgssoft.httpclient.HttpResponseProxy;
+import com.pgssoft.httpclient.internal.HttpResponseProxy;
 
 public final class SetStatusAction implements Action {
 

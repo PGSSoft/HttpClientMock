@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 
-public class HttpClientVerifyBuilder {
+public final class HttpClientVerifyBuilder {
 
     private final RuleBuilder ruleBuilder;
     private final List<HttpRequest> requests;

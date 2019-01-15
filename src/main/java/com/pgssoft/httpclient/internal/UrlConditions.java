@@ -1,4 +1,4 @@
-package com.pgssoft.httpclient;
+package com.pgssoft.httpclient.internal;
 
 import com.pgssoft.httpclient.debug.Debugger;
 import com.pgssoft.httpclient.matchers.MatchersList;

@@ -1,6 +1,6 @@
 package com.pgssoft.httpclient.condition;
 
-import com.pgssoft.httpclient.PeekSubscriber;
+import com.pgssoft.httpclient.internal.PeekSubscriber;
 import com.pgssoft.httpclient.debug.Debugger;
 import org.hamcrest.Matcher;
 

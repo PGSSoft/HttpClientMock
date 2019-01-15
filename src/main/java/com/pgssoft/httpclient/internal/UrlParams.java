@@ -1,4 +1,4 @@
-package com.pgssoft.httpclient;
+package com.pgssoft.httpclient.internal;
 
 import java.nio.charset.Charset;
 import java.util.*;

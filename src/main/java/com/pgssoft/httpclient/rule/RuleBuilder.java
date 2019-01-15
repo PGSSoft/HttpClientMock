@@ -1,6 +1,6 @@
 package com.pgssoft.httpclient.rule;
 
-import com.pgssoft.httpclient.UrlConditions;
+import com.pgssoft.httpclient.internal.UrlConditions;
 import com.pgssoft.httpclient.action.Action;
 import com.pgssoft.httpclient.action.ActionBundle;
 import com.pgssoft.httpclient.condition.Condition;

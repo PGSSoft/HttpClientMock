@@ -1,5 +1,6 @@
 package com.pgssoft.httpclient;
 
+import com.pgssoft.httpclient.internal.UrlConditions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

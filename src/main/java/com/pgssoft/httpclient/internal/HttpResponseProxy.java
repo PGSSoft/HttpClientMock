@@ -1,4 +1,4 @@
-package com.pgssoft.httpclient;
+package com.pgssoft.httpclient.internal;
 
 import javax.net.ssl.SSLSession;
 import java.net.URI;

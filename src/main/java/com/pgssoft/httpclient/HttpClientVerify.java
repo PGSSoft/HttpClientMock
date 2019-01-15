@@ -5,7 +5,7 @@ import com.pgssoft.httpclient.rule.RuleBuilder;
 import java.net.http.HttpRequest;
 import java.util.List;
 
-public class HttpClientVerify {
+public final class HttpClientVerify {
 
     private final String defaultHost;
     private final List<HttpRequest> requests;

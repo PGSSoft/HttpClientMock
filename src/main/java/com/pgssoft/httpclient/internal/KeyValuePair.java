@@ -1,4 +1,4 @@
-package com.pgssoft.httpclient;
+package com.pgssoft.httpclient.internal;
 
 public final class KeyValuePair {
 

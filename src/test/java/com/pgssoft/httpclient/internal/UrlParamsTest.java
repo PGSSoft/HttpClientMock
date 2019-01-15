@@ -1,5 +1,7 @@
-package com.pgssoft.httpclient;
+package com.pgssoft.httpclient.internal;
 
+import com.pgssoft.httpclient.internal.KeyValuePair;
+import com.pgssoft.httpclient.internal.UrlParams;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
