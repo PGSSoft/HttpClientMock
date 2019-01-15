@@ -10,7 +10,7 @@ public final class HttpClientVerify {
     private final String defaultHost;
     private final List<HttpRequest> requests;
 
-    public HttpClientVerify(String defaultHost, List<HttpRequest> requests) {
+    HttpClientVerify(String defaultHost, List<HttpRequest> requests) {
         this.requests = requests;
         this.defaultHost = defaultHost;
     }

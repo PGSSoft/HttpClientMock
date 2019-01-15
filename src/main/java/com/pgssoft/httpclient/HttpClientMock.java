@@ -29,6 +29,9 @@ public final class HttpClientMock extends HttpClient {
 
     private boolean debuggingOn;
 
+    /**
+     * Creates mock of HttpClient
+     */
     public HttpClientMock() {
         this("");
     }
@@ -49,7 +52,7 @@ public final class HttpClientMock extends HttpClient {
      * @param host default host for later conditions
      * @param debugger    debugger used for testing
      */
-    public HttpClientMock(String host, Debugger debugger) {
+    HttpClientMock(String host, Debugger debugger) {
         this.host = host;
         this.debugger = debugger;
     }
