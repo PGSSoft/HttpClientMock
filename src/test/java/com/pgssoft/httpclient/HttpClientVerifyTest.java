@@ -21,13 +21,17 @@ public class HttpClientVerifyTest {
 
         final HttpClientMock httpClientMock = new HttpClientMock();
 
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(noBody()).build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).method("HEAD", noBody()).build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).method("OPTIONS", noBody()).build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).method("PATCH", noBody()).build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(noBody()).build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).method("HEAD", noBody()).build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).method("OPTIONS", noBody()).build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).method("PATCH", noBody()).build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
 
         httpClientMock.verify().get("http://localhost").called();
         httpClientMock.verify().post("http://localhost").called();
@@ -42,14 +46,18 @@ public class HttpClientVerifyTest {
     public void shouldCountNumberOfHttpMethodCalls() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
 
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
 
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
 
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
 
         httpClientMock.verify().get("http://localhost").called();
         httpClientMock.verify().post("http://localhost").called(2);
@@ -64,14 +72,18 @@ public class HttpClientVerifyTest {
     public void shouldCountNumberOfUrlCalls() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
 
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
 
-        httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
 
-        httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
 
         httpClientMock.verify().get("http://localhost").called();
         httpClientMock.verify().get("http://www.google.com").called(2);
@@ -82,11 +94,15 @@ public class HttpClientVerifyTest {
     public void shouldVerifyBodyContent() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
 
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
 
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("bar")).build(), ofString());
-        httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("bar")).build(), ofString());
+            httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
 
         httpClientMock.verify().post("http://localhost").withBody(containsString("foo")).called(2);
         httpClientMock.verify().put("http://localhost").withBody(containsString("bar")).called();
@@ -96,6 +112,9 @@ public class HttpClientVerifyTest {
     @Test
     public void should_handle_path_with_query_parameter() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onPost("http://localhost").withParameter("a", "1").withParameter("b", "2").withParameter("c", "3").doReturn("empty");
+        httpClientMock.onPost("http://localhost").withParameter("a", "1").withParameter("b", "2").doReturn("empty");
+        httpClientMock.onPost("http://localhost").withParameter("a", "1").doReturn("empty");
 
         httpClientMock.send(newBuilder(URI.create("http://localhost?a=1&b=2&c=3")).POST(noBody()).build(), discarding());
         httpClientMock.send(newBuilder(URI.create("http://localhost?a=1&b=2")).POST(noBody()).build(), discarding());
@@ -115,8 +134,12 @@ public class HttpClientVerifyTest {
     public void should_handle_path_with_reference() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
 
-        httpClientMock.send(newBuilder(URI.create("http://localhost?a=1#abc")).POST(noBody()).build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost#xyz")).POST(noBody()).build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost?a=1#abc")).POST(noBody()).build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost#xyz")).POST(noBody()).build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
 
         httpClientMock.verify().post("http://localhost?a=1#abc").called(1);
         httpClientMock.verify().post("http://localhost#abc").notCalled();

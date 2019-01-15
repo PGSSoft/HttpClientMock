@@ -22,11 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class HttpClientResponseBuilderTest {
 
     @Test
-    public void should_return_status_404_when_no_rule_matches() throws Exception {
-        HttpClientMock httpClientMock = new HttpClientMock();
-        final var notFound = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
-        assertNull(notFound);
-        // TODO: Adjust for exception
+    public void should_throw_exception_when_no_rule_matches() throws Exception {
+        assertThrows(IllegalStateException.class, () -> {
+            HttpClientMock httpClientMock = new HttpClientMock();
+            httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        });
     }
 
     @Test
@@ -193,15 +193,15 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_not_throw_exception_when_body_matcher_is_present_on_post_request() throws Exception {
-        HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
-        httpClientMock.onPost("/path1")
-                .withBody(equalTo("Body content"))
-                .doReturnStatus(200);
+    public void should_throw_exception_when_body_matcher_is_present_on_post_request() throws Exception {
+        assertThrows(IllegalStateException.class, () -> {
+            HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
+            httpClientMock.onPost("/path1")
+                    .withBody(equalTo("Body content"))
+                    .doReturnStatus(200);
 
-        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/path2")).GET().build(), discarding());
-
-        assertNull(response);   // TODO: Catch exception instead, once it's implemented
+            httpClientMock.send(newBuilder(URI.create("http://localhost:8080/path2")).GET().build(), discarding());
+        });
     }
 
     private Action customAction() {
