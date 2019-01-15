@@ -289,7 +289,11 @@ public final class HttpClientMock extends HttpClient {
             debugger.debug(rules, request);
         }
 
-        return rule != null ? rule.next() : null;
+        if (rule == null) {
+            throw new IllegalStateException("No rule found for request: [" + request.method() + ": " + request.uri() + "]");
+        }
+
+        return rule.next();
     }
 
     @Override
