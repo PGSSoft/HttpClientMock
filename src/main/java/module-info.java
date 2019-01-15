@@ -1,4 +1,6 @@
-module com.pgssoft.httpclientmock {
+module com.pgssoft.httpclient {
     requires java.net.http;
     requires hamcrest.all;
+
+    exports com.pgssoft.httpclient;
 }
