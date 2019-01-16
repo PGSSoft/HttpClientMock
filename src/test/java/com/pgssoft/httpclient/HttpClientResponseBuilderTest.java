@@ -6,7 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpResponse;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.pgssoft.httpclient.Asserts.assertThrows;
 import static com.pgssoft.httpclient.matchers.HttpResponseMatchers.hasContent;
@@ -204,9 +208,26 @@ public class HttpClientResponseBuilderTest {
         });
     }
 
+    @Test
+    public void shouldRespectBodyHandler() throws Exception {
+        final HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+        // A simple string is passed to indicate what we want to see in the response
+        httpClientMock.onGet().doReturn("expected\nnewline");
+
+        // A BodyHandler is passed that transforms into a Stream of String based on newline characters
+        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), HttpResponse.BodyHandlers.ofLines());
+
+        // We expect out String to be returned in the form that the BodyHandler requires - a Stream of Strings
+        final List<String> responseList = response.body().collect(Collectors.toList());
+        assertThat(responseList.size(), equalTo(2));
+        assertThat(responseList.get(0), equalTo("expected"));
+        assertThat(responseList.get(1), equalTo("newline"));
+    }
+
     private Action customAction() {
         return r -> {
             r.setBody("I am a custom action");
+            r.setBytes(ByteBuffer.wrap("I am a custom action".getBytes()));
         };
     }
 }
