@@ -20,6 +20,13 @@ public class HttpClientVerifyTest {
     public void shouldHandleAllHttpMethods() throws Exception {
 
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost").doReturn("empty");
+        httpClientMock.onPost("http://localhost").doReturn("empty");
+        httpClientMock.onPut("http://localhost").doReturn("empty");
+        httpClientMock.onDelete("http://localhost").doReturn("empty");
+        httpClientMock.onHead("http://localhost").doReturn("empty");
+        httpClientMock.onOptions("http://localhost").doReturn("empty");
+        httpClientMock.onPatch("http://localhost").doReturn("empty");
 
         httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
         httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
@@ -42,6 +49,13 @@ public class HttpClientVerifyTest {
     public void shouldCountNumberOfHttpMethodCalls() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
 
+        httpClientMock.onGet("http://localhost").doReturn("empty");
+        httpClientMock.onPost("http://localhost").doReturn("empty");
+        httpClientMock.onPost("http://localhost").doReturn("empty");
+        httpClientMock.onDelete("http://localhost").doReturn("empty");
+        httpClientMock.onDelete("http://localhost").doReturn("empty");
+        httpClientMock.onDelete("http://localhost").doReturn("empty");
+
         httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
 
         httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
@@ -63,6 +77,12 @@ public class HttpClientVerifyTest {
     @Test
     public void shouldCountNumberOfUrlCalls() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost").doReturn("empty");
+        httpClientMock.onGet("http://www.google.com").doReturn("empty");
+        httpClientMock.onGet("http://www.google.com").doReturn("empty");
+        httpClientMock.onGet("http://example.com").doReturn("empty");
+        httpClientMock.onGet("http://example.com").doReturn("empty");
+        httpClientMock.onGet("http://example.com").doReturn("empty");
 
         httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
 
@@ -81,6 +101,10 @@ public class HttpClientVerifyTest {
     @Test
     public void shouldVerifyBodyContent() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onPost("http://localhost").withBody(containsString("foo")).doReturn("empty");
+        httpClientMock.onPost("http://localhost").withBody(containsString("foo")).doReturn("empty");
+        httpClientMock.onPut("http://localhost").withBody(containsString("bar")).doReturn("empty");
+        httpClientMock.onPut("http://localhost").withBody(containsString("foo")).doReturn("empty");
 
         httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
         httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
@@ -96,6 +120,9 @@ public class HttpClientVerifyTest {
     @Test
     public void should_handle_path_with_query_parameter() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onPost("http://localhost").withParameter("a", "1").withParameter("b", "2").withParameter("c", "3").doReturn("empty");
+        httpClientMock.onPost("http://localhost").withParameter("a", "1").withParameter("b", "2").doReturn("empty");
+        httpClientMock.onPost("http://localhost").withParameter("a", "1").doReturn("empty");
 
         httpClientMock.send(newBuilder(URI.create("http://localhost?a=1&b=2&c=3")).POST(noBody()).build(), discarding());
         httpClientMock.send(newBuilder(URI.create("http://localhost?a=1&b=2")).POST(noBody()).build(), discarding());
@@ -114,6 +141,8 @@ public class HttpClientVerifyTest {
     @Test
     public void should_handle_path_with_reference() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onPost().withParameter("a", "1").withReference("abc").doReturn("empty");
+        httpClientMock.onPost().withReference("xyz").doReturn("empty");
 
         httpClientMock.send(newBuilder(URI.create("http://localhost?a=1#abc")).POST(noBody()).build(), discarding());
         httpClientMock.send(newBuilder(URI.create("http://localhost#xyz")).POST(noBody()).build(), discarding());

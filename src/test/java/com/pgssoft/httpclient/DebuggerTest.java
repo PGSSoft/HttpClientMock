@@ -36,8 +36,12 @@ public class DebuggerTest {
     public void should_print_all_request_with_no_matching_rules() throws Exception {
         httpClientMock.onGet("/admin").doReturn("admin");
 
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost/admin")).GET().build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
+            httpClientMock.send(newBuilder(URI.create("http://localhost/admin")).GET().build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
 
         assertThat(debugger.requests, hasItem("http://localhost/login"));
         assertThat(debugger.requests, not(hasItem("http://localhost/admin")));
@@ -66,10 +70,14 @@ public class DebuggerTest {
                 .onGet("/login").withHeader("User-Agent", "Mozilla")
                 .doReturn("mozilla");
 
-        httpClientMock.debugOn();
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().header("User-Agent", "Mozilla").build(), ofString());
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().header("User-Agent", "Chrome").build(), ofString());
-        httpClientMock.debugOff();
+        try {
+            httpClientMock.debugOn();
+            httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().header("User-Agent", "Mozilla").build(), ofString());
+            httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().header("User-Agent", "Chrome").build(), ofString());
+            httpClientMock.debugOff();
+        } catch (IllegalStateException e) {
+            // discard the exception
+        }
 
         assertTrue(debugger.matching.contains("header User-Agent is \"Mozilla\""));
         assertFalse(debugger.notMatching.contains("header User-Agent is \"Chrome\""));
@@ -78,7 +86,11 @@ public class DebuggerTest {
     @Test
     public void should_put_message_about_missing_parameter() throws Exception {
         httpClientMock.onGet("/login").withParameter("foo", "bar");
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
         assertTrue(debugger.notMatching.contains("parameter foo occurs in request"));
     }
 
@@ -97,7 +109,11 @@ public class DebuggerTest {
         httpClientMock.onGet("/login")
                 .withParameter("foo", "bar")
                 .doReturn("login");
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=bbb")).GET().build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=bbb")).GET().build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
         assertTrue(debugger.notMatching.contains("parameter foo is \"bar\""));
     }
 
@@ -105,7 +121,11 @@ public class DebuggerTest {
     public void should_put_message_about_redundant_parameter() throws Exception {
         httpClientMock.onGet("/login")
                 .doReturn("login");
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=bbb")).GET().build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=bbb")).GET().build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
         assertTrue(debugger.notMatching.contains("parameter foo is redundant"));
     }
 
@@ -124,7 +144,11 @@ public class DebuggerTest {
     public void should_put_message_about_not_matching_reference() throws Exception {
         httpClientMock.onGet("/login#foo")
                 .doReturn("login");
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
         assertTrue(debugger.notMatching.contains("reference is \"foo\""));
     }
 
@@ -158,7 +182,11 @@ public class DebuggerTest {
     public void should_put_message_about_not_matching_http_method() throws Exception {
         httpClientMock.onGet("/login").doReturn("login");
         httpClientMock.debugOn();
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
         assertTrue(debugger.notMatching.contains("HTTP method is GET"));
     }
 
@@ -166,7 +194,11 @@ public class DebuggerTest {
     public void should_put_message_about_not_matching_URL() throws Exception {
         httpClientMock.onGet("http://localhost:8080/login").doReturn("login");
         httpClientMock.debugOn();
-        httpClientMock.send(newBuilder(URI.create("http://www.google.com")).POST(noBody()).build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://www.google.com")).POST(noBody()).build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
         assertTrue(debugger.notMatching.contains("schema is \"http\""));
         assertTrue(debugger.notMatching.contains("host is \"localhost\""));
         assertTrue(debugger.notMatching.contains("path is \"/login\""));
@@ -177,7 +209,11 @@ public class DebuggerTest {
     public void should_put_message_about_matching_URL() throws Exception {
         httpClientMock.onGet("http://localhost:8080/login").doReturn("login");
         httpClientMock.debugOn();
-        httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), discarding());
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
         assertTrue(debugger.matching.contains("schema is \"http\""));
         assertTrue(debugger.matching.contains("host is \"localhost\""));
         assertTrue(debugger.matching.contains("path is \"/login\""));

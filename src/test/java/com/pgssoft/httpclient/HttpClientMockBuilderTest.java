@@ -17,6 +17,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HttpClientMockBuilderTest {
 
@@ -64,16 +65,21 @@ public class HttpClientMockBuilderTest {
                 ofString()
         );
 
-        var thirdResponse = httpClientMock.send(
-                newBuilder(URI.create("http://localhost/login?a=1&b=2"))
-                        .POST(noBody())
-                        .build(),
-                ofString()
-        );
+        boolean exceptionThrown = false;
+        try {
+            httpClientMock.send(
+                    newBuilder(URI.create("http://localhost/login?a=1&b=2"))
+                            .POST(noBody())
+                            .build(),
+                    ofString()
+            );
+        } catch (IllegalStateException e) {
+            exceptionThrown = true;
+        }
 
         MatcherAssert.assertThat(firstResponse, HttpResponseMatchers.hasContent("one"));
         MatcherAssert.assertThat(secondResponse, HttpResponseMatchers.hasContent("two"));
-        assertThat(thirdResponse, is(nullValue()));
+        assertTrue(exceptionThrown);
     }
 
     @Test
@@ -327,12 +333,14 @@ public class HttpClientMockBuilderTest {
                 .withParameter("foo", "bar")
                 .doReturnStatus(200);
 
-        //HttpResponse response = httpClientMock.execute(new HttpPost("http://localhost/login"));
-        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        boolean exceptionThrown = false;
+        try {
+            final var response = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        } catch (IllegalStateException e) {
+            exceptionThrown = true;
+        }
 
-        //assertThat(response, hasStatus(404));
-        assertThat(response, is(nullValue()));
-        // TODO: Check exception once implemented
+        assertTrue(exceptionThrown);
     }
 
     @Test
