@@ -20,18 +20,21 @@ public class HttpClientVerifyTest {
     public void shouldHandleAllHttpMethods() throws Exception {
 
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost").doReturn("empty");
+        httpClientMock.onPost("http://localhost").doReturn("empty");
+        httpClientMock.onPut("http://localhost").doReturn("empty");
+        httpClientMock.onDelete("http://localhost").doReturn("empty");
+        httpClientMock.onHead("http://localhost").doReturn("empty");
+        httpClientMock.onOptions("http://localhost").doReturn("empty");
+        httpClientMock.onPatch("http://localhost").doReturn("empty");
 
-        try {
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(noBody()).build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).method("HEAD", noBody()).build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).method("OPTIONS", noBody()).build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).method("PATCH", noBody()).build(), discarding());
-        } catch (IllegalStateException e) {
-            // discard exception
-        }
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).method("HEAD", noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).method("OPTIONS", noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).method("PATCH", noBody()).build(), discarding());
 
         httpClientMock.verify().get("http://localhost").called();
         httpClientMock.verify().post("http://localhost").called();
@@ -46,18 +49,21 @@ public class HttpClientVerifyTest {
     public void shouldCountNumberOfHttpMethodCalls() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
 
-        try {
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
+        httpClientMock.onGet("http://localhost").doReturn("empty");
+        httpClientMock.onPost("http://localhost").doReturn("empty");
+        httpClientMock.onPost("http://localhost").doReturn("empty");
+        httpClientMock.onDelete("http://localhost").doReturn("empty");
+        httpClientMock.onDelete("http://localhost").doReturn("empty");
+        httpClientMock.onDelete("http://localhost").doReturn("empty");
 
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
 
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
-        } catch (IllegalStateException e) {
-            // discard exception
-        }
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
 
         httpClientMock.verify().get("http://localhost").called();
         httpClientMock.verify().post("http://localhost").called(2);
@@ -71,19 +77,21 @@ public class HttpClientVerifyTest {
     @Test
     public void shouldCountNumberOfUrlCalls() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost").doReturn("empty");
+        httpClientMock.onGet("http://www.google.com").doReturn("empty");
+        httpClientMock.onGet("http://www.google.com").doReturn("empty");
+        httpClientMock.onGet("http://example.com").doReturn("empty");
+        httpClientMock.onGet("http://example.com").doReturn("empty");
+        httpClientMock.onGet("http://example.com").doReturn("empty");
 
-        try {
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
 
-            httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), discarding());
 
-            httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
-        } catch (IllegalStateException e) {
-            // discard exception
-        }
+        httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://example.com")).GET().build(), discarding());
 
         httpClientMock.verify().get("http://localhost").called();
         httpClientMock.verify().get("http://www.google.com").called(2);
@@ -93,16 +101,16 @@ public class HttpClientVerifyTest {
     @Test
     public void shouldVerifyBodyContent() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onPost("http://localhost").withBody(containsString("foo")).doReturn("empty");
+        httpClientMock.onPost("http://localhost").withBody(containsString("foo")).doReturn("empty");
+        httpClientMock.onPut("http://localhost").withBody(containsString("bar")).doReturn("empty");
+        httpClientMock.onPut("http://localhost").withBody(containsString("foo")).doReturn("empty");
 
-        try {
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
 
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("bar")).build(), ofString());
-            httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
-        } catch (IllegalStateException e) {
-            // discard exception
-        }
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("bar")).build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
 
         httpClientMock.verify().post("http://localhost").withBody(containsString("foo")).called(2);
         httpClientMock.verify().put("http://localhost").withBody(containsString("bar")).called();
@@ -133,13 +141,11 @@ public class HttpClientVerifyTest {
     @Test
     public void should_handle_path_with_reference() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onPost().withParameter("a", "1").withReference("abc").doReturn("empty");
+        httpClientMock.onPost().withReference("xyz").doReturn("empty");
 
-        try {
-            httpClientMock.send(newBuilder(URI.create("http://localhost?a=1#abc")).POST(noBody()).build(), discarding());
-            httpClientMock.send(newBuilder(URI.create("http://localhost#xyz")).POST(noBody()).build(), discarding());
-        } catch (IllegalStateException e) {
-            // discard exception
-        }
+        httpClientMock.send(newBuilder(URI.create("http://localhost?a=1#abc")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost#xyz")).POST(noBody()).build(), discarding());
 
         httpClientMock.verify().post("http://localhost?a=1#abc").called(1);
         httpClientMock.verify().post("http://localhost#abc").notCalled();
