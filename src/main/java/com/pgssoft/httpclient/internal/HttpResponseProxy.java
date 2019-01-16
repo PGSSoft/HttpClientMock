@@ -13,13 +13,15 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
 
     private final int statusCode;
     private final HttpHeaders headers;
-    private final T body;
     private final ByteBuffer bytes;
+    private final Object tempBody;
 
-    private HttpResponseProxy(int statusCode, HttpHeaders headers, T body, ByteBuffer bytes) {
+    private T body;
+
+    private HttpResponseProxy(int statusCode, HttpHeaders headers, Object tempBody, ByteBuffer bytes) {
         this.statusCode = statusCode;
         this.headers = headers;
-        this.body = body;
+        this.tempBody = tempBody;
         this.bytes = bytes;
     }
 
@@ -65,6 +67,10 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
 
     public ByteBuffer getBytes() {
         return bytes;
+    }
+
+    public void setBody(T body) {
+        this.body = body;
     }
 
     public final static class Builder {

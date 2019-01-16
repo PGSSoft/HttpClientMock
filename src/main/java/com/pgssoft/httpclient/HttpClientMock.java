@@ -330,6 +330,12 @@ public final class HttpClientMock extends HttpClient {
         publisher.subscribe(subscriber);
         publisher.submit(List.of(((HttpResponseProxy<T>)response).getBytes()));
         publisher.close();
+        try {
+            var body = subscriber.getBody().toCompletableFuture().get();
+            ((HttpResponseProxy<T>) response).setBody(body);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private HttpResponse.ResponseInfo produceResponseInfo(HttpResponse response) {
