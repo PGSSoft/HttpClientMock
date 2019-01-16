@@ -297,7 +297,7 @@ public final class HttpClientMock extends HttpClient {
             throw new IllegalStateException("No rule found for request: [" + request.method() + ": " + request.uri() + "]");
         }
 
-        final HttpResponse<T> response = rule.next();
+        final HttpResponse<T> response = rule.produceResponse();
         submitToBodyHandler(response, responseBodyHandler);
         return response;
     }
