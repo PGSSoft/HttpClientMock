@@ -30,7 +30,7 @@ public final class Rule {
                 conditions.stream().allMatch(c -> c.matches(request));
     }
 
-    public HttpResponse next() throws IOException {
+    public HttpResponse produceResponse() throws IOException {
         final var responseBuilder = new HttpResponseProxy.Builder();
 
         final var actionBundle = actionBundles.size() > 1 ? actionBundles.poll() : actionBundles.peek();

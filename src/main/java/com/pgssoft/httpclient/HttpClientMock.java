@@ -1,6 +1,7 @@
 package com.pgssoft.httpclient;
 
 import com.pgssoft.httpclient.debug.Debugger;
+import com.pgssoft.httpclient.internal.HttpResponseProxy;
 import com.pgssoft.httpclient.rule.RuleBuilder;
 import com.pgssoft.httpclient.rule.Rule;
 
@@ -11,12 +12,15 @@ import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.SubmissionPublisher;
 import java.util.stream.Collectors;
 
 public final class HttpClientMock extends HttpClient {
@@ -293,7 +297,9 @@ public final class HttpClientMock extends HttpClient {
             throw new IllegalStateException("No rule found for request: [" + request.method() + ": " + request.uri() + "]");
         }
 
-        return rule.next();
+        final HttpResponse<T> response = rule.produceResponse();
+        submitToBodyHandler(response, responseBodyHandler);
+        return response;
     }
 
     @Override
@@ -312,5 +318,42 @@ public final class HttpClientMock extends HttpClient {
 
     public void debugOff() {
         debuggingOn = false;
+    }
+
+    private <T> void submitToBodyHandler(HttpResponse<T> response, HttpResponse.BodyHandler<T> responseBodyHandler) {
+        if (((HttpResponseProxy<T>)response).getBytes() == null) {
+            return;
+        }
+
+        var subscriber = responseBodyHandler.apply(produceResponseInfo(response));
+        var publisher = new SubmissionPublisher<List<ByteBuffer>>();
+        publisher.subscribe(subscriber);
+        publisher.submit(List.of(((HttpResponseProxy<T>)response).getBytes()));
+        publisher.close();
+        try {
+            var body = subscriber.getBody().toCompletableFuture().get();
+            ((HttpResponseProxy<T>) response).setBody(body);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private HttpResponse.ResponseInfo produceResponseInfo(HttpResponse response) {
+        return new HttpResponse.ResponseInfo() {
+            @Override
+            public int statusCode() {
+                return response.statusCode();
+            }
+
+            @Override
+            public HttpHeaders headers() {
+                return response.headers();
+            }
+
+            @Override
+            public Version version() {
+                return response.version();
+            }
+        };
     }
 }

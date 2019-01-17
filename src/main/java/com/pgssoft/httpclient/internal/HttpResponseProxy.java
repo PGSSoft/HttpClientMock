@@ -6,18 +6,23 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 public class HttpResponseProxy<T> implements HttpResponse<T> {
 
     private final int statusCode;
     private final HttpHeaders headers;
-    private final T body;
+    private final ByteBuffer bytes;
+    private final Object tempBody;
 
-    private HttpResponseProxy(int statusCode, HttpHeaders headers, T body) {
+    private T body;
+
+    private HttpResponseProxy(int statusCode, HttpHeaders headers, Object tempBody, ByteBuffer bytes) {
         this.statusCode = statusCode;
         this.headers = headers;
-        this.body = body;
+        this.tempBody = tempBody;
+        this.bytes = bytes;
     }
 
     @Override
@@ -60,11 +65,20 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
         return null;
     }
 
+    public ByteBuffer getBytes() {
+        return bytes;
+    }
+
+    public void setBody(T body) {
+        this.body = body;
+    }
+
     public final static class Builder {
 
         private int statusCode;
         private Map<String, List<String>> headers = new HashMap<>();
         private Object body;
+        private ByteBuffer bytes;
 
         public int getStatusCode() {
             return statusCode;
@@ -94,8 +108,16 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
             this.body = body;
         }
 
+        public ByteBuffer getBytes() {
+            return bytes;
+        }
+
+        public void setBytes(ByteBuffer bytes) {
+            this.bytes = bytes;
+        }
+
         public <T> HttpResponseProxy<T> build() {
-            return new HttpResponseProxy<T>(statusCode, HttpHeaders.of(headers, (a, b) -> true), (T) body);
+            return new HttpResponseProxy<T>(statusCode, HttpHeaders.of(headers, (a, b) -> true), (T) body, bytes);
         }
     }
 }
