@@ -44,8 +44,7 @@ public final class HttpClientResponseBuilder {
     }
 
     public HttpClientResponseBuilder doReturn(int statusCode, String response, Charset charset) {
-        //ruleBuilder.addAction(new SetBodyStringAction(statusCode, response)); // TODO: Include charset and statusCode
-        ruleBuilder.addActionBundle(new SetBodyStringAction(response));
+        ruleBuilder.addActionBundle(new SetBodyStringAction(response, charset));
         ruleBuilder.addAction(new SetStatusAction(statusCode));
         return new HttpClientResponseBuilder(ruleBuilder);
     }
