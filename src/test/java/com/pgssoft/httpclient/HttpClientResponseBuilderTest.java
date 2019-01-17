@@ -4,7 +4,10 @@ import com.pgssoft.httpclient.action.Action;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
@@ -222,6 +225,19 @@ public class HttpClientResponseBuilderTest {
         assertThat(responseList.size(), equalTo(2));
         assertThat(responseList.get(0), equalTo("expected"));
         assertThat(responseList.get(1), equalTo("newline"));
+    }
+
+    @Test
+    public void shouldTransformStringToInputStream() throws Exception {
+        final String expectedString = "expected";
+        final HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+        httpClientMock.onGet().doReturn(expectedString);
+
+        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), HttpResponse.BodyHandlers.ofInputStream());
+
+        final InputStream output = response.body();
+        final String outputString = new BufferedReader(new InputStreamReader(output)).readLine();
+        assertThat(outputString, equalTo(expectedString));
     }
 
     private Action customAction() {
