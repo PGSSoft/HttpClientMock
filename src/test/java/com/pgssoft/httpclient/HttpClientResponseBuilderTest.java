@@ -25,6 +25,7 @@ import static java.net.http.HttpResponse.BodyHandlers.discarding;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class HttpClientResponseBuilderTest {
@@ -88,6 +89,16 @@ public class HttpClientResponseBuilderTest {
         assertThat(response1, hasContent("first"));
         assertThat(response2, hasContent("second"));
         assertThat(response3, hasContent("third"));
+    }
+
+    @Test
+    public void shouldFailToDecodeBodyWhenDifferentCharsetsUsed() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+        httpClientMock.onGet("/foo").doReturn("output", StandardCharsets.UTF_16);
+
+        final var response1 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString(StandardCharsets.UTF_8));
+
+        assertThat(response1, not(hasContent("output")));
     }
 
     @Test
