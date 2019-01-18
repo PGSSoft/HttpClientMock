@@ -272,7 +272,6 @@ public class HttpClientResponseBuilderTest {
 
     private Action customAction() {
         return r -> {
-            r.setBody("I am a custom action");
             r.setBytes(ByteBuffer.wrap("I am a custom action".getBytes()));
         };
     }

@@ -1,6 +1,6 @@
 package com.pgssoft.httpclient.action;
 
-import com.pgssoft.httpclient.internal.HttpResponseProxy;
+import com.pgssoft.httpclient.internal.MockedServerResponse;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ public final class ThrowExceptionAction implements Action {
     }
 
     @Override
-    public void enrichResponse(HttpResponseProxy.Builder responseBuilder) throws IOException {
+    public void enrichResponse(MockedServerResponse.Builder responseBuilder) throws IOException {
         throw exception;
     }
 }
