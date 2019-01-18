@@ -11,6 +11,7 @@ import java.net.http.HttpResponse;
 
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
+import static java.net.http.HttpResponse.BodyHandlers.discarding;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,7 +34,7 @@ public class HttpClientMockBuilderTest {
         var req = newBuilder(URI.create("http://localhost/login"))
                 .POST(noBody())
                 .build();
-        var res = httpClientMock.send(req, ofString());
+        var res = httpClientMock.send(req, discarding());
 
         assertThat(res.statusCode(), equalTo(200));
     }
@@ -206,8 +207,8 @@ public class HttpClientMockBuilderTest {
         httpClientMock.onPost("/login").withBody(containsString("foo"))
                 .doReturnStatus(200);
 
-        final var badLogin = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), ofString());
-        final var correctLogin = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), ofString());
+        final var badLogin = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), discarding());
+        final var correctLogin = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(HttpRequest.BodyPublishers.ofString("foo")).build(), discarding());
 
         MatcherAssert.assertThat(correctLogin, HttpResponseMatchers.hasStatus(200));
         MatcherAssert.assertThat(badLogin, HttpResponseMatchers.hasStatus(500));
@@ -225,8 +226,8 @@ public class HttpClientMockBuilderTest {
 //        HttpResponse notFound = httpClientMock.execute(new HttpPost("http://localhost/login"));
 //        HttpResponse notFound_2 = httpClientMock.execute(new HttpPost("http://localhost/login?user=john&pass=abc&foo=bar"));
 
-        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login?user=john")).POST(noBody()).build(), ofString());
-        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login?user=john&pass=abc")).POST(noBody()).build(), ofString());
+        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login?user=john")).POST(noBody()).build(), discarding());
+        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login?user=john&pass=abc")).POST(noBody()).build(), discarding());
 
         //assertThat(notFound, hasStatus(404));
         MatcherAssert.assertThat(wrong, HttpResponseMatchers.hasStatus(400));
@@ -246,8 +247,8 @@ public class HttpClientMockBuilderTest {
         //HttpResponse wrong = httpClientMock.execute(new HttpPost("http://localhost/login"));
         //HttpResponse ok = httpClientMock.execute(new HttpPost("http://localhost/login#abc"));
 
-        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
-        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login#abc")).POST(noBody()).build(), ofString());
+        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
+        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login#abc")).POST(noBody()).build(), discarding());
 
         MatcherAssert.assertThat(wrong, HttpResponseMatchers.hasStatus(400));
         MatcherAssert.assertThat(ok, HttpResponseMatchers.hasStatus(200));
@@ -267,7 +268,7 @@ public class HttpClientMockBuilderTest {
 //        HttpResponse wrong3 = httpClientMock.execute(new HttpPost("http://localhost/login#abc"));
 //        HttpResponse ok = httpClientMock.execute(new HttpPost("http://localhost/login?p=1#abc"));
 
-        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login?p=1#abc")).POST(noBody()).build(), ofString());
+        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login?p=1#abc")).POST(noBody()).build(), discarding());
 
 //        assertThat(wrong1, hasStatus(404));
 //        assertThat(wrong2, hasStatus(404));
@@ -288,8 +289,8 @@ public class HttpClientMockBuilderTest {
         //HttpResponse wrong = httpClientMock.execute(new HttpPost("http://localhost/login"));
         //HttpResponse ok = httpClientMock.execute(new HttpPost("http://localhost/login#ref"));
 
-        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
-        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login#ref")).POST(noBody()).build(), ofString());
+        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
+        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login#ref")).POST(noBody()).build(), discarding());
 
         MatcherAssert.assertThat(wrong, HttpResponseMatchers.hasStatus(400));
         MatcherAssert.assertThat(ok, HttpResponseMatchers.hasStatus(200));
@@ -313,14 +314,14 @@ public class HttpClientMockBuilderTest {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login").doReturnStatus(200);
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
         httpClientMock.reset();
         httpClientMock.verify().post("/login").notCalled();
 
         httpClientMock.onPost("/login").doReturnStatus(200);
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
         httpClientMock.verify().post("/login").called(2);
 
     }

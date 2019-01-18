@@ -65,7 +65,7 @@ public class HttpClientResponseBuilderTest {
         assertThat(response5, hasContent("third"));
 
         final var bar1 = httpClientMock.send(newBuilder(URI.create("http://localhost/bar")).GET().build(), ofString());
-        final var bar2 = httpClientMock.send(newBuilder(URI.create("http://localhost/bar")).GET().build(), ofString());
+        final var bar2 = httpClientMock.send(newBuilder(URI.create("http://localhost/bar")).GET().build(), discarding());
         assertThat(bar1, hasContent("bar"));
         assertThat(bar2, hasStatus(300));
 
@@ -224,7 +224,7 @@ public class HttpClientResponseBuilderTest {
         httpClientMock.onGet("/login")
                 .doReturnStatus(204);   // no content
 
-        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
+        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), discarding());
 
         assertNull(login.body());
     }
