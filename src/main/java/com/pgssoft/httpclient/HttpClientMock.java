@@ -321,19 +321,18 @@ public final class HttpClientMock extends HttpClient {
     }
 
     private <T> T submitToBodyHandler(MockedServerResponse serverResponse, HttpResponse.BodyHandler<T> responseBodyHandler) {
-        if (serverResponse.getBytes() == null) {
-            return null; // TODO: returning null doesn't seems like a good option. I created https://jira.pgs-soft.com/browse/PHCM-11 to fix it.
-        }
+        final ByteBuffer bytes = serverResponse.getBytes() != null ? serverResponse.getBytes() : ByteBuffer.wrap(new byte[] {});
 
         var subscriber = responseBodyHandler.apply(produceResponseInfo(serverResponse));
         var publisher = new SubmissionPublisher<List<ByteBuffer>>();
         publisher.subscribe(subscriber);
-        publisher.submit(List.of(serverResponse.getBytes()));
+        publisher.submit(List.of(bytes));
         publisher.close();
         try {
             return subscriber.getBody().toCompletableFuture().get();
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            throw new IllegalStateException("Error reading the mocked response body - did you forget to provide it? " +
+                    "If there should be no body, try using BodyHandlers.discarding() when making the request", e);
         }
     }
 
