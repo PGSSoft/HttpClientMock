@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ import static java.net.http.HttpResponse.BodyHandlers.discarding;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class HttpClientResponseBuilderTest {
@@ -69,6 +71,34 @@ public class HttpClientResponseBuilderTest {
 
         assertThrows(IOException.class, () -> httpClientMock.send(newBuilder(URI.create("http://localhost/bar")).GET().build(), ofString()));
 
+    }
+
+    @Test
+    public void should_support_response_in_different_charsets() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onGet("/foo")
+                .doReturn("first")
+                .doReturn("second", Charset.forName("UTF-16"))
+                .doReturn("third", Charset.forName("ASCII"));
+
+        final var response1 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        final var response2 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString(StandardCharsets.UTF_16));
+        final var response3 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString(StandardCharsets.US_ASCII));
+
+        assertThat(response1, hasContent("first"));
+        assertThat(response2, hasContent("second"));
+        assertThat(response3, hasContent("third"));
+    }
+
+    @Test
+    public void shouldFailToDecodeBodyWhenDifferentCharsetsUsed() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+        httpClientMock.onGet("/foo").doReturn("output", StandardCharsets.UTF_16);
+
+        final var response1 = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString(StandardCharsets.UTF_8));
+
+        assertThat(response1, not(hasContent("output")));
     }
 
     @Test

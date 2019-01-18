@@ -1,6 +1,5 @@
 package com.pgssoft.httpclient.internal;
 
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,10 +9,6 @@ import static java.util.stream.Collectors.toList;
 class UrlParams extends ArrayList<KeyValuePair> {
 
     static UrlParams parse(String query) {
-        return parse(query, Charset.forName("UTF-8"));
-    }
-
-    static UrlParams parse(String query, Charset charset) {
         if (query == null) {
             return new UrlParams();
         } else {

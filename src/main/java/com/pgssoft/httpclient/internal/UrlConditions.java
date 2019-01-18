@@ -11,7 +11,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpRequest;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -49,7 +48,7 @@ public class UrlConditions {
             if (url.getPath() != null && url.getPath().length() > 0) {
                 conditions.getPathConditions().add(equalTo(url.getPath()));
             }
-            List<KeyValuePair> params = UrlParams.parse(url.getQuery(), Charset.forName("UTF-8"));
+            List<KeyValuePair> params = UrlParams.parse(url.getQuery());
             for (KeyValuePair param : params) {
                 conditions.getParameterConditions().put(param.getKey(), equalTo(param.getValue()));
             }
