@@ -6,23 +6,18 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 public class HttpResponseProxy<T> implements HttpResponse<T> {
 
     private final int statusCode;
     private final HttpHeaders headers;
-    private final ByteBuffer bytes;
-    private final Object tempBody;
-
     private T body;
 
-    private HttpResponseProxy(int statusCode, HttpHeaders headers, Object tempBody, ByteBuffer bytes) {
+    public HttpResponseProxy(int statusCode, HttpHeaders headers, T body) {
         this.statusCode = statusCode;
         this.headers = headers;
-        this.tempBody = tempBody;
-        this.bytes = bytes;
+        this.body = body;
     }
 
     @Override
@@ -65,59 +60,4 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
         return null;
     }
 
-    public ByteBuffer getBytes() {
-        return bytes;
-    }
-
-    public void setBody(T body) {
-        this.body = body;
-    }
-
-    public final static class Builder {
-
-        private int statusCode;
-        private Map<String, List<String>> headers = new HashMap<>();
-        private Object body;
-        private ByteBuffer bytes;
-
-        public int getStatusCode() {
-            return statusCode;
-        }
-
-        public void setStatusCode(int statusCode) {
-            this.statusCode = statusCode;
-        }
-
-        public Map<String, List<String>> getHeaders() {
-            return headers;
-        }
-
-        public void setHeaders(Map<String, List<String>> headers) {
-            this.headers = headers;
-        }
-
-        public void addHeader(String key, String value) {
-            headers.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
-        }
-
-        public Object getBody() {
-            return body;
-        }
-
-        public void setBody(Object body) {
-            this.body = body;
-        }
-
-        public ByteBuffer getBytes() {
-            return bytes;
-        }
-
-        public void setBytes(ByteBuffer bytes) {
-            this.bytes = bytes;
-        }
-
-        public <T> HttpResponseProxy<T> build() {
-            return new HttpResponseProxy<T>(statusCode, HttpHeaders.of(headers, (a, b) -> true), (T) body, bytes);
-        }
-    }
 }

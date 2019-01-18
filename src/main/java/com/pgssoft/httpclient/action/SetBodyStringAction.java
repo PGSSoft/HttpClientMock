@@ -1,6 +1,6 @@
 package com.pgssoft.httpclient.action;
 
-import com.pgssoft.httpclient.internal.HttpResponseProxy;
+import com.pgssoft.httpclient.internal.MockedServerResponse;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -14,8 +14,7 @@ public final class SetBodyStringAction implements Action {
     }
 
     @Override
-    public void enrichResponse(HttpResponseProxy.Builder responseBuilder) throws IOException {
-        responseBuilder.setBody(content);
+    public void enrichResponse(MockedServerResponse.Builder responseBuilder) throws IOException {
         responseBuilder.setBytes(ByteBuffer.wrap(content.getBytes()));
     }
 }

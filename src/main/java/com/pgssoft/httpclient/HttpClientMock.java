@@ -1,6 +1,7 @@
 package com.pgssoft.httpclient;
 
 import com.pgssoft.httpclient.debug.Debugger;
+import com.pgssoft.httpclient.internal.MockedServerResponse;
 import com.pgssoft.httpclient.internal.HttpResponseProxy;
 import com.pgssoft.httpclient.rule.RuleBuilder;
 import com.pgssoft.httpclient.rule.Rule;
@@ -272,7 +273,7 @@ public final class HttpClientMock extends HttpClient {
     }
 
     @Override
-    public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException, InterruptedException {
+    public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException {
         synchronized (rulesUnderConstruction) {
             rules.addAll(
                     rulesUnderConstruction.stream()
@@ -284,22 +285,21 @@ public final class HttpClientMock extends HttpClient {
 
         requests.add(request);
 
-        final Rule rule = rules.stream()
+        final Optional<Rule> rule = rules.stream()
                 .filter(r -> r.matches(request))
-                .reduce((a, b) -> b)
-                .orElse(null);
+                .reduce((a, b) -> b);
 
-        if (debuggingOn || rule == null) {
+        if (debuggingOn || rule.isEmpty()) {
             debugger.debug(rules, request);
         }
 
-        if (rule == null) {
+        if (rule.isEmpty()) {
             throw new IllegalStateException("No rule found for request: [" + request.method() + ": " + request.uri() + "]");
         }
 
-        final HttpResponse<T> response = rule.produceResponse();
-        submitToBodyHandler(response, responseBodyHandler);
-        return response;
+        final MockedServerResponse serverResponse = rule.get().produceResponse();
+        var body = submitToBodyHandler(serverResponse, responseBodyHandler);
+        return new HttpResponseProxy<T>(serverResponse.statusCode(),serverResponse.httpHeaders(), body);
     }
 
     @Override
@@ -320,25 +320,24 @@ public final class HttpClientMock extends HttpClient {
         debuggingOn = false;
     }
 
-    private <T> void submitToBodyHandler(HttpResponse<T> response, HttpResponse.BodyHandler<T> responseBodyHandler) {
-        if (((HttpResponseProxy<T>)response).getBytes() == null) {
-            return;
+    private <T> T submitToBodyHandler(MockedServerResponse serverResponse, HttpResponse.BodyHandler<T> responseBodyHandler) {
+        if (serverResponse.getBytes() == null) {
+            return null; // TODO: returning null doesn't seems like a good option. I created https://jira.pgs-soft.com/browse/PHCM-11 to fix it.
         }
 
-        var subscriber = responseBodyHandler.apply(produceResponseInfo(response));
+        var subscriber = responseBodyHandler.apply(produceResponseInfo(serverResponse));
         var publisher = new SubmissionPublisher<List<ByteBuffer>>();
         publisher.subscribe(subscriber);
-        publisher.submit(List.of(((HttpResponseProxy<T>)response).getBytes()));
+        publisher.submit(List.of(serverResponse.getBytes()));
         publisher.close();
         try {
-            var body = subscriber.getBody().toCompletableFuture().get();
-            ((HttpResponseProxy<T>) response).setBody(body);
+            return subscriber.getBody().toCompletableFuture().get();
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private HttpResponse.ResponseInfo produceResponseInfo(HttpResponse response) {
+    private HttpResponse.ResponseInfo produceResponseInfo(MockedServerResponse response) {
         return new HttpResponse.ResponseInfo() {
             @Override
             public int statusCode() {
@@ -347,12 +346,12 @@ public final class HttpClientMock extends HttpClient {
 
             @Override
             public HttpHeaders headers() {
-                return response.headers();
+                return response.httpHeaders();
             }
 
             @Override
             public Version version() {
-                return response.version();
+                return Version.HTTP_1_1;
             }
         };
     }

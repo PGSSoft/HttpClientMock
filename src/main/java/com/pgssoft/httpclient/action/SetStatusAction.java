@@ -1,6 +1,6 @@
 package com.pgssoft.httpclient.action;
 
-import com.pgssoft.httpclient.internal.HttpResponseProxy;
+import com.pgssoft.httpclient.internal.MockedServerResponse;
 
 public final class SetStatusAction implements Action {
 
@@ -11,7 +11,7 @@ public final class SetStatusAction implements Action {
     }
 
     @Override
-    public void enrichResponse(HttpResponseProxy.Builder responseBuilder) {
+    public void enrichResponse(MockedServerResponse.Builder responseBuilder) {
         responseBuilder.setStatusCode(status);
     }
 }
