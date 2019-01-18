@@ -23,6 +23,6 @@ public final class SetBodyStringAction implements Action {
 
     @Override
     public void enrichResponse(MockedServerResponse.Builder responseBuilder) throws IOException {
-        responseBuilder.setBytes(ByteBuffer.wrap(content.getBytes()));
+        responseBuilder.setBytes(charset.encode(content));
     }
 }
