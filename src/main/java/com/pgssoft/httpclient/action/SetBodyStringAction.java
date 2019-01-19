@@ -1,9 +1,8 @@
 package com.pgssoft.httpclient.action;
 
-import com.pgssoft.httpclient.internal.MockedServerResponse;
+import com.pgssoft.httpclient.Action;
+import com.pgssoft.httpclient.MockedServerResponse;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -22,7 +21,7 @@ public final class SetBodyStringAction implements Action {
     }
 
     @Override
-    public void enrichResponse(MockedServerResponse.Builder responseBuilder) throws IOException {
-        responseBuilder.setBytes(charset.encode(content));
+    public void enrichResponse(MockedServerResponse.Builder responseBuilder) {
+        responseBuilder.setBodyBytes(charset.encode(content));
     }
 }

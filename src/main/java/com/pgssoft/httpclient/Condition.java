@@ -1,4 +1,4 @@
-package com.pgssoft.httpclient.condition;
+package com.pgssoft.httpclient;
 
 import com.pgssoft.httpclient.debug.Debugger;
 

@@ -1,6 +1,5 @@
-package com.pgssoft.httpclient.internal;
+package com.pgssoft.httpclient;
 
-import java.net.http.HttpHeaders;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -8,12 +7,12 @@ public class MockedServerResponse {
 
     private final int statusCode;
     private final Map<String, List<String>> headers;
-    private final ByteBuffer bytes;
+    private final ByteBuffer bodyBytes;
 
-    private MockedServerResponse(int statusCode, Map<String, List<String>> headers, ByteBuffer bytes) {
+    private MockedServerResponse(int statusCode, Map<String, List<String>> headers, ByteBuffer bodyBytes) {
         this.statusCode = statusCode;
         this.headers = headers;
-        this.bytes = bytes;
+        this.bodyBytes = bodyBytes;
     }
 
     public int statusCode() {
@@ -24,20 +23,16 @@ public class MockedServerResponse {
         return headers;
     }
 
-    public ByteBuffer getBytes() {
-        return bytes;
+    public ByteBuffer getBodyBytes() {
+        return bodyBytes;
     }
 
-    public HttpHeaders httpHeaders() {
-        return HttpHeaders.of(headers(),(a,b)->true);
-    }
 
     public final static class Builder {
 
         private int statusCode;
         private Map<String, List<String>> headers = new HashMap<>();
-        private ByteBuffer bytes;
-
+        private ByteBuffer bodyBytes = ByteBuffer.wrap(new byte[] {});
 
         public void setStatusCode(int statusCode) {
             this.statusCode = statusCode;
@@ -47,12 +42,12 @@ public class MockedServerResponse {
             headers.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
         }
 
-        public void setBytes(ByteBuffer bytes) {
-            this.bytes = bytes;
+        public void setBodyBytes(ByteBuffer bodyBytes) {
+            this.bodyBytes = bodyBytes;
         }
 
         public MockedServerResponse build() {
-            return new MockedServerResponse(statusCode,headers,  bytes);
+            return new MockedServerResponse(statusCode,headers, bodyBytes);
         }
     }
 }

@@ -1,6 +1,4 @@
-package com.pgssoft.httpclient.action;
-
-import com.pgssoft.httpclient.internal.MockedServerResponse;
+package com.pgssoft.httpclient;
 
 import java.io.IOException;
 

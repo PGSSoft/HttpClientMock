@@ -1,10 +1,10 @@
 package com.pgssoft.httpclient.rule;
 
-import com.pgssoft.httpclient.internal.MockedServerResponse;
+import com.pgssoft.httpclient.MockedServerResponse;
 import com.pgssoft.httpclient.internal.UrlConditions;
-import com.pgssoft.httpclient.action.Action;
+import com.pgssoft.httpclient.Action;
 import com.pgssoft.httpclient.action.ActionBundle;
-import com.pgssoft.httpclient.condition.Condition;
+import com.pgssoft.httpclient.Condition;
 import com.pgssoft.httpclient.debug.Debugger;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ public final class Rule {
                 conditions.stream().allMatch(c -> c.matches(request));
     }
 
-    public MockedServerResponse produceResponse() throws IOException {
+    public MockedServerResponse produceResponse() throws IOException  {
         final var responseBuilder = new MockedServerResponse.Builder();
 
         final var actionBundle = actionBundles.size() > 1 ? actionBundles.poll() : actionBundles.peek();

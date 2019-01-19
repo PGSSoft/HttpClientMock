@@ -1,7 +1,6 @@
 package com.pgssoft.httpclient;
 
 import com.pgssoft.httpclient.debug.Debugger;
-import com.pgssoft.httpclient.internal.MockedServerResponse;
 import com.pgssoft.httpclient.internal.HttpResponseProxy;
 import com.pgssoft.httpclient.rule.RuleBuilder;
 import com.pgssoft.httpclient.rule.Rule;
@@ -20,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.stream.Collectors;
@@ -54,8 +54,8 @@ public final class HttpClientMock extends HttpClient {
     /**
      * Creates mock of HttpClient with default host. All defined conditions without host will use default host
      *
-     * @param host default host for later conditions
-     * @param debugger    debugger used for testing
+     * @param host     default host for later conditions
+     * @param debugger debugger used for testing
      */
     HttpClientMock(String host, Debugger debugger) {
         this.host = host;
@@ -274,6 +274,14 @@ public final class HttpClientMock extends HttpClient {
 
     @Override
     public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException {
+        var rule = findNextRule(request);
+        var serverResponse = rule.produceResponse();
+        var body = submitToBodyHandler(serverResponse, responseBodyHandler);
+        var httpHeaders = HttpHeaders.of(serverResponse.headers(), (a, b) -> true);
+        return new HttpResponseProxy<>(serverResponse.statusCode(), httpHeaders, body);
+    }
+
+    private Rule findNextRule(HttpRequest request) {
         synchronized (rulesUnderConstruction) {
             rules.addAll(
                     rulesUnderConstruction.stream()
@@ -296,20 +304,27 @@ public final class HttpClientMock extends HttpClient {
         if (rule.isEmpty()) {
             throw new IllegalStateException("No rule found for request: [" + request.method() + ": " + request.uri() + "]");
         }
-
-        final MockedServerResponse serverResponse = rule.get().produceResponse();
-        var body = submitToBodyHandler(serverResponse, responseBodyHandler);
-        return new HttpResponseProxy<T>(serverResponse.statusCode(),serverResponse.httpHeaders(), body);
+        return rule.get();
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) {
-        return null;
+        try {
+            var rule = findNextRule(request);
+            var serverResponse = rule.produceResponse();
+            var body = submitToBodyHandler(serverResponse, responseBodyHandler);
+            var httpHeaders = HttpHeaders.of(serverResponse.headers(), (a, b) -> true);
+            var response = new HttpResponseProxy<>(serverResponse.statusCode(), httpHeaders, body);
+            return CompletableFuture.completedFuture(response);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler, HttpResponse.PushPromiseHandler<T> pushPromiseHandler) {
-        return null;
+        return sendAsync(request, responseBodyHandler);
     }
 
     public void debugOn() {
@@ -321,16 +336,15 @@ public final class HttpClientMock extends HttpClient {
     }
 
     private <T> T submitToBodyHandler(MockedServerResponse serverResponse, HttpResponse.BodyHandler<T> responseBodyHandler) {
-        final ByteBuffer bytes = serverResponse.getBytes() != null ? serverResponse.getBytes() : ByteBuffer.wrap(new byte[] {});
-
+        var bodyBytes = serverResponse.getBodyBytes();
         var subscriber = responseBodyHandler.apply(produceResponseInfo(serverResponse));
         var publisher = new SubmissionPublisher<List<ByteBuffer>>();
         publisher.subscribe(subscriber);
-        publisher.submit(List.of(bytes));
+        publisher.submit(List.of(bodyBytes));
         publisher.close();
         try {
             return subscriber.getBody().toCompletableFuture().get();
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException("Error reading the mocked response body - did you forget to provide it? " +
                     "If there should be no body, try using BodyHandlers.discarding() when making the request", e);
         }
@@ -345,7 +359,7 @@ public final class HttpClientMock extends HttpClient {
 
             @Override
             public HttpHeaders headers() {
-                return response.httpHeaders();
+                return HttpHeaders.of(response.headers(), (a, b) -> true);
             }
 
             @Override

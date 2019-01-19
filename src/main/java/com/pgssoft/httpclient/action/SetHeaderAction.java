@@ -1,6 +1,7 @@
 package com.pgssoft.httpclient.action;
 
-import com.pgssoft.httpclient.internal.MockedServerResponse;
+import com.pgssoft.httpclient.Action;
+import com.pgssoft.httpclient.MockedServerResponse;
 
 
 public final class SetHeaderAction implements Action {

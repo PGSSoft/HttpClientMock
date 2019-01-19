@@ -1,8 +1,6 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.action.Action;
 import com.pgssoft.httpclient.condition.BodyCondition;
-import com.pgssoft.httpclient.condition.Condition;
 import com.pgssoft.httpclient.condition.HeaderCondition;
 import com.pgssoft.httpclient.rule.RuleBuilder;
 import org.hamcrest.Matcher;

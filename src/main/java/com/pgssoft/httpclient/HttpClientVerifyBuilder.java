@@ -1,7 +1,6 @@
 package com.pgssoft.httpclient;
 
 import com.pgssoft.httpclient.condition.BodyCondition;
-import com.pgssoft.httpclient.condition.Condition;
 import com.pgssoft.httpclient.condition.HeaderCondition;
 import com.pgssoft.httpclient.rule.Rule;
 import com.pgssoft.httpclient.rule.RuleBuilder;

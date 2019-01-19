@@ -1,6 +1,5 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.action.Action;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -271,8 +270,6 @@ public class HttpClientResponseBuilderTest {
     }
 
     private Action customAction() {
-        return r -> {
-            r.setBytes(ByteBuffer.wrap("I am a custom action".getBytes()));
-        };
+        return r -> r.setBodyBytes(ByteBuffer.wrap("I am a custom action".getBytes()));
     }
 }

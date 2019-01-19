@@ -9,7 +9,7 @@ import java.net.http.HttpResponse;
 public final class HttpResponseMatchers {
 
     public static Matcher<? super HttpResponse> hasStatus(int expectedStatus) {
-        return new BaseMatcher<HttpResponse>() {
+        return new BaseMatcher<>() {
             @Override
             public boolean matches(Object o) {
                 if (!(o instanceof HttpResponse)) {
@@ -27,7 +27,7 @@ public final class HttpResponseMatchers {
     }
 
     public static Matcher<? super HttpResponse> hasContent(final String content) {
-        return new BaseMatcher<HttpResponse>() {
+        return new BaseMatcher<>() {
             @Override
             public boolean matches(Object o) {
                 if (!(o instanceof HttpResponse)) {
