@@ -59,7 +59,7 @@ public final class HttpClientMockBuilder {
      * @return conditions builder
      */
     public HttpClientMockBuilder withReference(Matcher<String> matcher) {
-        ruleBuilder.addReferenceCondition(matcher);
+        ruleBuilder.setReferenceCondition(matcher);
         return this;
     }
 
@@ -82,7 +82,7 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withParameter(String name, Matcher<String> matcher) {
-        ruleBuilder.addParameterCondition(name, matcher);
+        ruleBuilder.setParameterCondition(name, matcher);
         return this;
     }
 
@@ -136,7 +136,7 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withPath(Matcher<String> matcher) {
-        ruleBuilder.addPathCondition(matcher);
+        ruleBuilder.setPathCondition(matcher);
         return this;
     }
 

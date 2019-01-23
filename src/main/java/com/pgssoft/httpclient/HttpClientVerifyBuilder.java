@@ -61,7 +61,7 @@ public final class HttpClientVerifyBuilder {
      * @return conditions builder
      */
     public HttpClientVerifyBuilder withReference(Matcher<String> matcher) {
-        ruleBuilder.addReferenceCondition(matcher);
+        ruleBuilder.setReferenceCondition(matcher);
         return this;
     }
 
@@ -84,7 +84,7 @@ public final class HttpClientVerifyBuilder {
      * @return verification builder
      */
     public HttpClientVerifyBuilder withParameter(String name, Matcher<String> matcher) {
-        ruleBuilder.addParameterCondition(name, matcher);
+        ruleBuilder.setParameterCondition(name, matcher);
         return this;
     }
 
@@ -138,7 +138,7 @@ public final class HttpClientVerifyBuilder {
      * @return verification builder
      */
     public HttpClientVerifyBuilder withPath(Matcher<String> matcher) {
-        ruleBuilder.addPathCondition(matcher);
+        ruleBuilder.setPathCondition(matcher);
         return this;
     }
 

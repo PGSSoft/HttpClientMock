@@ -1,5 +1,6 @@
 package com.pgssoft.httpclient;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -221,10 +223,10 @@ public class HttpClientResponseBuilderTest {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onGet("/login")
                 .doReturnStatus(204);   // no content
+        var request = newBuilder(URI.create("http://localhost:8080/login")).GET().build();
+        var response = httpClientMock.send(request, BodyHandlers.ofString());
 
-        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), HttpResponse.BodyHandlers.ofString());
-
-        assertEquals("",login.body());
+        assertEquals("", response.body());
     }
 
     @Test
@@ -246,7 +248,7 @@ public class HttpClientResponseBuilderTest {
         httpClientMock.onGet().doReturn("expected\nnewline");
 
         // A BodyHandler is passed that transforms into a Stream of String based on newline characters
-        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), HttpResponse.BodyHandlers.ofLines());
+        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), BodyHandlers.ofLines());
 
         // We expect out String to be returned in the form that the BodyHandler requires - a Stream of Strings
         final List<String> responseList = response.body().collect(Collectors.toList());
@@ -261,7 +263,7 @@ public class HttpClientResponseBuilderTest {
         final HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
         httpClientMock.onGet().doReturn(expectedString);
 
-        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), HttpResponse.BodyHandlers.ofInputStream());
+        final var response = httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), BodyHandlers.ofInputStream());
 
         final InputStream output = response.body();
         final String outputString = new BufferedReader(new InputStreamReader(output)).readLine();

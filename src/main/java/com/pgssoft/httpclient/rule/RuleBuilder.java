@@ -13,16 +13,17 @@ public final class RuleBuilder {
 
     private final Deque<ActionBundle> actionBundles = new LinkedList<>();
     private final List<Condition> conditions = new ArrayList<>();
-    private final UrlConditions urlConditions = new UrlConditions();
+    private final UrlConditions urlConditions;
 
     public RuleBuilder(String method, String host, String url) {
         url = url.startsWith("/") ? host + url : url;
         addCondition(new MethodCondition(method));
-        addUrlConditions(UrlConditions.parse(url));
+        urlConditions = UrlConditions.parse(url);
     }
 
     public RuleBuilder(String method) {
         addCondition(new MethodCondition(method));
+        urlConditions = new UrlConditions();
     }
 
     public void addAction(Action action) {
@@ -44,30 +45,21 @@ public final class RuleBuilder {
         conditions.add(condition);
     }
 
-    private void addUrlConditions(UrlConditions urlConditions) {
-        this.urlConditions.join(urlConditions);
+
+    public void setParameterCondition(String name, Matcher<String> matcher) {
+        urlConditions.getParameterConditions().put(name, matcher);
     }
 
-    public void addParameterCondition(String name, Matcher<String> matcher) {
-        final var conditions = new UrlConditions();
-        conditions.getParameterConditions().put(name, matcher);
-        addUrlConditions(conditions);
-    }
-
-    public void addReferenceCondition(Matcher<String> matcher) {
-        final var conditions = new UrlConditions();
-        conditions.setReferenceConditions(matcher);
-        addUrlConditions(conditions);
+    public void setReferenceCondition(Matcher<String> matcher) {
+        urlConditions.setReferenceConditions(matcher);
     }
 
     public void addHostCondition(String host) {
-        addUrlConditions(UrlConditions.parse(host));
+       //TODO addUrlConditions(UrlConditions.parse(host));
     }
 
-    public void addPathCondition(Matcher<String> matcher) {
-        final var conditions = new UrlConditions();
-        conditions.getPathConditions().add(matcher);
-        addUrlConditions(conditions);
+    public void setPathCondition(Matcher<String> matcher) {
+        urlConditions.setPathCondition(matcher);
     }
 
     public Rule build() {

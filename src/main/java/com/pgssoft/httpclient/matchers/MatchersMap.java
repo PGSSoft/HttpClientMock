@@ -1,21 +1,21 @@
 package com.pgssoft.httpclient.matchers;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
 
 import java.util.HashMap;
 
-public class MatchersMap<K, V> extends HashMap<K, MatchersList<V>> {
+public class MatchersMap<K, V> extends HashMap<K, Matcher<V>> {
 
     public boolean matches(K name, V value) {
-        return this.containsKey(name) && this.get(name).allMatches(value);
+        return this.containsKey(name) && this.get(name).matches(value);
     }
 
-    public void put(K name, Matcher<V> value) {
-        this.putIfAbsent(name, new MatchersList<>());
-        this.get(name).add(value);
+    public Matcher<V> put(K name, Matcher<V> value) {
+        return this.putIfAbsent(name, value);
     }
 
     public String describe(String name) {
-        return getOrDefault(name, new MatchersList<>()).describe();
+        return StringDescription.toString(get(name));
     }
 }

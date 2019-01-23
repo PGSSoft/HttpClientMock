@@ -132,12 +132,11 @@ public class DebuggerTest {
     @Test
     public void should_put_message_with_all_parameter_matchers() throws Exception {
         httpClientMock.onGet("/login")
-                .withParameter("foo", Matchers.startsWith("a"))
-                .withParameter("foo", Matchers.endsWith("b"))
+                .withParameter("foo", Matchers.allOf(Matchers.startsWith("a"),Matchers.endsWith("b")))
                 .doReturn("login");
         httpClientMock.debugOn();
         httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=aabb")).GET().build(), discarding());
-        assertTrue(debugger.matching.contains("parameter foo is a string starting with \"a\" and a string ending with \"b\""));
+        assertTrue(debugger.matching.contains("parameter foo is (a string starting with \"a\" and a string ending with \"b\")"));
     }
 
     @Test

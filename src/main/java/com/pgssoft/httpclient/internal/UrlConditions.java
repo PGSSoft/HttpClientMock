@@ -24,30 +24,21 @@ public class UrlConditions {
     private static final int EMPTY_PORT = -1;
     private MatchersMap<String, String> parameterConditions = new MatchersMap<>();
     private Matcher<String> referenceConditions = Matchers.isEmptyOrNullString();
-    private MatchersList<String> hostConditions = new MatchersList<>();
-    private MatchersList<String> pathConditions = new MatchersList<>();
-    private MatchersList<Integer> portConditions = new MatchersList<>();
+    private Matcher<String> hostConditions = Matchers.any(String.class);
+    private Matcher<String> pathConditions = Matchers.any(String.class);
+    private Matcher<Integer> portConditions = Matchers.any(Integer.class);
     private Matcher<String> schemaConditions = Matchers.any(String.class);
 
     public static UrlConditions parse(String urlText) {
         try {
             UrlConditions conditions = new UrlConditions();
             URL url = new URL(urlText);
-            if (url.getRef() != null) {
-                conditions.setReferenceConditions(equalTo(url.getRef()));
-            } else {
-                conditions.setReferenceConditions(isEmptyOrNullString());
-            }
-            conditions.setSchemaConditions(Matchers.equalTo(url.getProtocol()));
-            if (url.getHost() != null && url.getHost().length() > 0) {  // TODO: Could use a better way of checking for null strings in this method
-                conditions.getHostConditions().add(equalTo(url.getHost()));
-            }
-            if (url.getPort() != -1) {
-                conditions.getPortConditions().add(equalTo(url.getPort()));
-            }
-            if (url.getPath() != null && url.getPath().length() > 0) {
-                conditions.getPathConditions().add(equalTo(url.getPath()));
-            }
+            conditions.setSchemaConditions(getStringMatcher(url.getProtocol()));
+            conditions.setHostConditions(getStringMatcher(url.getHost()));
+            conditions.setPortCondition(equalTo(url.getPort()));
+            conditions.setPathCondition(getStringMatcher(url.getPath()));
+            conditions.setReferenceConditions(getStringMatcher(url.getRef()));
+
             List<KeyValuePair> params = UrlParams.parse(url.getQuery());
             for (KeyValuePair param : params) {
                 conditions.getParameterConditions().put(param.getKey(), equalTo(param.getValue()));
@@ -56,6 +47,18 @@ public class UrlConditions {
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    private static Matcher<String> getStringMatcher(String ref) {
+        if (ref==null || ref.isEmpty()) {
+            return Matchers.isEmptyOrNullString();
+        } else {
+            return Matchers.equalTo(ref);
+        }
+    }
+
+    private void setPortCondition(Matcher<Integer> equalTo) {
+        portConditions = equalTo;
     }
 
     public MatchersMap<String, String> getParameterConditions() {
@@ -70,19 +73,19 @@ public class UrlConditions {
         this.referenceConditions = referenceConditions;
     }
 
-    public MatchersList<String> getHostConditions() {
+    public Matcher<String> getHostConditions() {
         return hostConditions;
     }
 
-    public void setHostConditions(MatchersList<String> hostConditions) {
+    public void setHostConditions(Matcher<String> hostConditions) {
         this.hostConditions = hostConditions;
     }
 
-    public MatchersList<String> getPathConditions() {
+    public Matcher<String> getPathConditions() {
         return pathConditions;
     }
 
-    public MatchersList<Integer> getPortConditions() {
+    public Matcher<Integer> getPortConditions() {
         return portConditions;
     }
 
@@ -90,13 +93,17 @@ public class UrlConditions {
         this.schemaConditions = schemaConditions;
     }
 
+    public void setPathCondition(Matcher<String> matcher) {
+        this.pathConditions = matcher;
+    }
+
     public boolean matches(URI uri) {
         try {
             URL url = uri.toURL();
 
-            return hostConditions.allMatches(url.getHost())
-                    && pathConditions.allMatches(url.getPath())
-                    && portConditions.allMatches(url.getPort())
+            return hostConditions.matches(url.getHost())
+                    && pathConditions.matches(url.getPath())
+                    && portConditions.matches(url.getPort())
                     && referenceConditions.matches(url.getRef())
                     && schemaConditions.matches(url.getProtocol())
                     && allDefinedParamsOccurredInURL(url.getQuery())
@@ -124,26 +131,14 @@ public class UrlConditions {
                 .collect(Collectors.toSet());
     }
 
-    public void join(UrlConditions a) {
-        this.referenceConditions = a.referenceConditions;
-        this.schemaConditions = a.schemaConditions;
-        this.portConditions.addAll(a.portConditions);
-        this.pathConditions.addAll(a.pathConditions);
-        this.hostConditions.addAll(a.hostConditions);
-        for (String paramName : a.parameterConditions.keySet()) {
-            for (Matcher<String> paramValue : a.parameterConditions.get(paramName)) {
-                this.parameterConditions.put(paramName, paramValue);
-            }
-        }
-    }
 
     public void debug(HttpRequest request, Debugger debugger) {
         try {
             URL url = new URL(request.uri().toString());
-            debugger.message(hostConditions.allMatches(url.getHost()), "schema is " + describe(schemaConditions));
-            debugger.message(hostConditions.allMatches(url.getHost()), "host is " + hostConditions.describe());
-            debugger.message(pathConditions.allMatches(url.getPath()), "path is " + pathConditions.describe());
-            debugger.message(portConditions.allMatches(url.getPort()), "port is " + portDebugDescription());
+            debugger.message(hostConditions.matches(url.getHost()), "schema is " + describe(schemaConditions));
+            debugger.message(hostConditions.matches(url.getHost()), "host is " + StringDescription.toString(hostConditions));
+            debugger.message(pathConditions.matches(url.getPath()), "path is " + StringDescription.toString(pathConditions));
+            debugger.message(portConditions.matches(url.getPort()), "port is " + portDebugDescription());
             if (referenceConditions != isEmptyOrNullString() || !referenceConditions.matches(url.getRef())) {
                 debugger.message(referenceConditions.matches(url.getRef()), "reference is " + describe(referenceConditions));
             }
@@ -174,10 +169,11 @@ public class UrlConditions {
     }
 
     private String portDebugDescription() {
-        if (portConditions.allMatches(EMPTY_PORT)) {
+        if (portConditions.matches(EMPTY_PORT)) {
             return "empty";
         } else {
-            return portConditions.describe();
+            return StringDescription.toString(portConditions);
         }
     }
+
 }
