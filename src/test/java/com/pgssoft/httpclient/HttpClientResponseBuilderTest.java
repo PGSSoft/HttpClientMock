@@ -25,6 +25,7 @@ import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class HttpClientResponseBuilderTest {
@@ -128,7 +129,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_throw_exception_when_throwing_action_matched() throws IOException {
+    public void should_throw_exception_when_throwing_action_matched() {
         Assertions.assertThrows(IOException.class, () -> {
             HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
             httpClientMock.onGet("/foo").doThrowException(new IOException());
@@ -216,16 +217,14 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_not_set_response_entity_when_status_is_no_content() throws Exception {
-        /* Not sure I understand the point of this test   ~rskupnik */
-
+    public void should_allow_to_return_response_without_body() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onGet("/login")
                 .doReturnStatus(204);   // no content
 
-        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), discarding());
+        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), HttpResponse.BodyHandlers.ofString());
 
-        assertNull(login.body());
+        assertEquals("",login.body());
     }
 
     @Test

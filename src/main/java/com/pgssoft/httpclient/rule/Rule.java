@@ -29,7 +29,7 @@ public final class Rule {
                 conditions.stream().allMatch(c -> c.matches(request));
     }
 
-    public MockedServerResponse produceResponse() throws IOException  {
+    public MockedServerResponse produceResponse() throws IOException {
         final var responseBuilder = new MockedServerResponse.Builder();
 
         final var actionBundle = actionBundles.size() > 1 ? actionBundles.poll() : actionBundles.peek();
@@ -42,8 +42,12 @@ public final class Rule {
 
     public void debug(HttpRequest request, Debugger debugger) {
         for (Condition condition : conditions) {
-            condition.debug(request, debugger);
+            debugCondition(condition, request, debugger);
         }
         urlConditions.debug(request, debugger);
+    }
+
+    private void debugCondition(Condition condition, HttpRequest request, Debugger debugger) {
+        debugger.message(matches(request), condition.getDebugMessage());
     }
 }

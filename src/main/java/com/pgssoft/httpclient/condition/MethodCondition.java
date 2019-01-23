@@ -1,7 +1,6 @@
 package com.pgssoft.httpclient.condition;
 
 import com.pgssoft.httpclient.Condition;
-import com.pgssoft.httpclient.debug.Debugger;
 
 import java.net.http.HttpRequest;
 
@@ -19,7 +18,7 @@ public final class MethodCondition implements Condition {
     }
 
     @Override
-    public void debug(HttpRequest request, Debugger debugger) {
-        debugger.message(matches(request), "HTTP method is " + method);
+    public String getDebugMessage() {
+        return "HTTP method is " + method;
     }
 }

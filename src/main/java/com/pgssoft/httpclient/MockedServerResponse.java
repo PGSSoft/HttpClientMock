@@ -32,7 +32,7 @@ public class MockedServerResponse {
 
         private int statusCode;
         private Map<String, List<String>> headers = new HashMap<>();
-        private ByteBuffer bodyBytes = ByteBuffer.wrap(new byte[] {});
+        private ByteBuffer bodyBytes = ByteBuffer.wrap(new byte[]{});
 
         public void setStatusCode(int statusCode) {
             this.statusCode = statusCode;
@@ -47,7 +47,7 @@ public class MockedServerResponse {
         }
 
         public MockedServerResponse build() {
-            return new MockedServerResponse(statusCode,headers, bodyBytes);
+            return new MockedServerResponse(statusCode, headers, bodyBytes);
         }
     }
 }

@@ -31,7 +31,8 @@ public final class BodyCondition implements Condition {
     }
 
     @Override
-    public void debug(HttpRequest request, Debugger debugger) {
-        debugger.message(matches(request), "body matches");
+    public String getDebugMessage() {
+        return "body matches";
     }
+
 }

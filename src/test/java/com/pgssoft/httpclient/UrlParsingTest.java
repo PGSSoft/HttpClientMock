@@ -18,6 +18,7 @@ public class UrlParsingTest {
         assertTrue(urlConditions.getReferenceConditions().matches(""));
     }
 
+
     @Test
     public void parseHostWithPort() {
         UrlConditions urlConditions = UrlConditions.parse("http://localhost:8080");

@@ -20,7 +20,7 @@ public class HttpClientMockAsyncTest {
         httpClientMock.onPost()
                 .withHost("http://localhost")
                 .withPath("/login")
-                .doReturn(200,"ABC");
+                .doReturn(200, "ABC");
 
         var req = newBuilder(URI.create("http://localhost/login"))
                 .POST(noBody())
@@ -31,5 +31,6 @@ public class HttpClientMockAsyncTest {
         assertThat(res.get().statusCode(), equalTo(200));
         httpClientMock.verify().post("http://localhost/login");
     }
+
 
 }

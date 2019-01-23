@@ -294,7 +294,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void after_reset_every_call_should_result_in_status_404() throws Exception {
+    public void after_reset_every_call_should_result_in_status_404() {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login").doReturnStatus(200);

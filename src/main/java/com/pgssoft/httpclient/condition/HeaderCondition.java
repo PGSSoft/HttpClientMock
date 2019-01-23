@@ -1,7 +1,6 @@
 package com.pgssoft.httpclient.condition;
 
 import com.pgssoft.httpclient.Condition;
-import com.pgssoft.httpclient.debug.Debugger;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
@@ -27,7 +26,7 @@ public final class HeaderCondition implements Condition {
     }
 
     @Override
-    public void debug(HttpRequest request, Debugger debugger) {
-        debugger.message(matches(request), "header " + header + " is " + StringDescription.toString(expectedValue));
+    public String getDebugMessage() {
+        return "header " + header + " is " + StringDescription.toString(expectedValue);
     }
 }

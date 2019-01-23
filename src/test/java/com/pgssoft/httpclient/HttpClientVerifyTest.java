@@ -3,7 +3,6 @@ package com.pgssoft.httpclient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 
@@ -154,7 +153,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void should_throw_exception_when_number_of_calls_is_wrong() throws IOException {
+    public void should_throw_exception_when_number_of_calls_is_wrong() {
         Assertions.assertThrows(IllegalStateException.class, () -> {
             final HttpClientMock httpClientMock = new HttpClientMock();
 

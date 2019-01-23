@@ -2,8 +2,8 @@ package com.pgssoft.httpclient;
 
 import com.pgssoft.httpclient.debug.Debugger;
 import com.pgssoft.httpclient.internal.HttpResponseProxy;
-import com.pgssoft.httpclient.rule.RuleBuilder;
 import com.pgssoft.httpclient.rule.Rule;
+import com.pgssoft.httpclient.rule.RuleBuilder;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
@@ -17,7 +17,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -302,7 +304,7 @@ public final class HttpClientMock extends HttpClient {
         }
 
         if (rule.isEmpty()) {
-            throw new IllegalStateException("No rule found for request: [" + request.method() + ": " + request.uri() + "]");
+            throw new NoMatchingRuleException(request);
         }
         return rule.get();
     }
@@ -340,7 +342,9 @@ public final class HttpClientMock extends HttpClient {
         var subscriber = responseBodyHandler.apply(produceResponseInfo(serverResponse));
         var publisher = new SubmissionPublisher<List<ByteBuffer>>();
         publisher.subscribe(subscriber);
-        publisher.submit(List.of(bodyBytes));
+        if (bodyBytes.array().length!=0) {
+            publisher.submit(List.of(bodyBytes));
+        }
         publisher.close();
         try {
             return subscriber.getBody().toCompletableFuture().get();

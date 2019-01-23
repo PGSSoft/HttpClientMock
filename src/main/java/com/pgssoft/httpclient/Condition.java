@@ -1,13 +1,12 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.debug.Debugger;
-
 import java.net.http.HttpRequest;
 
 public interface Condition {
     boolean matches(HttpRequest request);
 
-    default void debug(HttpRequest request, Debugger debugger) {
-        debugger.message(matches(request), getClass().getSimpleName());
+    default String getDebugMessage() {
+        return getClass().getSimpleName();
     }
+
 }
