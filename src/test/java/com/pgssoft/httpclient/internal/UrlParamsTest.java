@@ -12,16 +12,16 @@ public class UrlParamsTest {
 
     @Test
     public void shouldParseQueryString() {
-        List<KeyValuePair> params = UrlParams.parse("a=1&b=2");
-        assertEquals("a", params.get(0).getKey());
-        assertEquals("1", params.get(0).getValue());
-        assertEquals("b", params.get(1).getKey());
-        assertEquals("2", params.get(1).getValue());
+        List<ParameterValue> params = UrlParams.parse("a=1&b=2").getParams();
+        assertEquals("a", params.get(0).getName());
+        assertEquals("1", params.get(0).getValues().get(0));
+        assertEquals("b", params.get(1).getName());
+        assertEquals("2", params.get(1).getValues().get(0));
     }
 
     @Test
     public void shouldReturnEmptyListForNull() {
-        assertEquals(0, UrlParams.parse(null).size());
+        assertEquals(0, UrlParams.parse(null).getParams().size());
     }
 
 }

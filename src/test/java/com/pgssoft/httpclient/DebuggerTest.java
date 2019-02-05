@@ -101,7 +101,7 @@ public class DebuggerTest {
                 .doReturn("login");
         httpClientMock.debugOn();
         httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=bar")).GET().build(), discarding());
-        assertTrue(debugger.matching.contains("parameter foo is \"bar\""));
+        assertTrue(debugger.matching.contains("parameter foo has matching value"));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class DebuggerTest {
         } catch (IllegalStateException e) {
             // discard exception
         }
-        assertTrue(debugger.notMatching.contains("parameter foo is \"bar\""));
+        assertTrue(debugger.notMatching.contains("parameter foo has matching value"));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class DebuggerTest {
                 .doReturn("login");
         httpClientMock.debugOn();
         httpClientMock.send(newBuilder(URI.create("http://localhost/login?foo=aabb")).GET().build(), discarding());
-        assertTrue(debugger.matching.contains("parameter foo is (a string starting with \"a\" and a string ending with \"b\")"));
+        assertTrue(debugger.matching.contains("parameter foo has matching value"));
     }
 
     @Test

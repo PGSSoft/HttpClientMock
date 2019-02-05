@@ -6,6 +6,7 @@ import com.pgssoft.httpclient.action.ActionBundle;
 import com.pgssoft.httpclient.Condition;
 import com.pgssoft.httpclient.condition.MethodCondition;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
 import java.util.*;
 
@@ -47,7 +48,7 @@ public final class RuleBuilder {
 
 
     public void setParameterCondition(String name, Matcher<String> matcher) {
-        urlConditions.getParameterConditions().put(name, matcher);
+        urlConditions.getParameterConditions().put(name, Matchers.containsInAnyOrder(matcher));
     }
 
     public void setReferenceCondition(Matcher<String> matcher) {

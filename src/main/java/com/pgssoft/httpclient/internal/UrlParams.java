@@ -6,7 +6,30 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
-class UrlParams extends ArrayList<KeyValuePair> {
+class UrlParams {
+
+    ArrayList<ParameterValue> params = new ArrayList<>();
+
+    boolean contain(String name) {
+        return params.stream().anyMatch(p -> p.getName().equals(name));
+    }
+
+    public List<String> getNames() {
+        return params.stream().map(ParameterValue::getName).collect(Collectors.toList());
+    }
+
+    public List<String> getValue(String paramName) {
+        return params.stream()
+                .filter(p -> p.getName().equals(paramName))
+                .map(ParameterValue::getValues)
+                .findFirst()
+                .orElse(Collections.emptyList());
+    }
+
+    public List<ParameterValue> getParams() {
+        return params;
+    }
+
 
     static UrlParams parse(String query) {
         if (query == null) {
@@ -14,17 +37,13 @@ class UrlParams extends ArrayList<KeyValuePair> {
         } else {
             UrlParams urlParams = new UrlParams();
             splitQuery(query).forEach((k, v) -> {
-                v.forEach(str -> urlParams.add(new KeyValuePair(k, str)));
+                v.forEach(str -> urlParams.params.add(new ParameterValue(k,v)));
             });
             return urlParams;
         }
     }
 
-    boolean contain(String name) {
-        return stream().anyMatch(p -> p.getKey().equals(name));
-    }
 
-    // TODO: Custom parsing logic, needs to be heavily tested or replaced with a trusted third party dependency
     private static Map<String, List<String>> splitQuery(String query) {
         if (query == null || query.length() <= 0) {
             return Collections.emptyMap();
@@ -41,4 +60,5 @@ class UrlParams extends ArrayList<KeyValuePair> {
         final String value = idx > 0 && it.length() > idx + 1 ? it.substring(idx + 1) : null;
         return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
+
 }

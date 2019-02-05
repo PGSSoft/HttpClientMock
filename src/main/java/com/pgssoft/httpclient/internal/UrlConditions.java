@@ -1,7 +1,6 @@
 package com.pgssoft.httpclient.internal;
 
 import com.pgssoft.httpclient.debug.Debugger;
-import com.pgssoft.httpclient.matchers.MatchersList;
 import com.pgssoft.httpclient.matchers.MatchersMap;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -11,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpRequest;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 public class UrlConditions {
 
     private static final int EMPTY_PORT = -1;
-    private MatchersMap<String, String> parameterConditions = new MatchersMap<>();
+    private MatchersMap<String, Iterable<? extends String>> parameterConditions = new MatchersMap<>();
     private Matcher<String> referenceConditions = Matchers.isEmptyOrNullString();
     private Matcher<String> hostConditions = Matchers.any(String.class);
     private Matcher<String> pathConditions = Matchers.any(String.class);
@@ -39,9 +39,10 @@ public class UrlConditions {
             conditions.setPathCondition(getStringMatcher(url.getPath()));
             conditions.setReferenceConditions(getStringMatcher(url.getRef()));
 
-            List<KeyValuePair> params = UrlParams.parse(url.getQuery());
-            for (KeyValuePair param : params) {
-                conditions.getParameterConditions().put(param.getKey(), equalTo(param.getValue()));
+            UrlParams params = UrlParams.parse(url.getQuery());
+            for (ParameterValue param : params.getParams()) {
+                String[] values = param.getValues().toArray(new String[]{});
+                conditions.getParameterConditions().put(param.getName(), Matchers.containsInAnyOrder(values));
             }
             return conditions;
         } catch (MalformedURLException e) {
@@ -61,7 +62,7 @@ public class UrlConditions {
         portConditions = equalTo;
     }
 
-    public MatchersMap<String, String> getParameterConditions() {
+    public MatchersMap<String, Iterable<? extends  String>> getParameterConditions() {
         return parameterConditions;
     }
 
@@ -120,8 +121,8 @@ public class UrlConditions {
 
     private boolean allParamsHaveMatchingValue(String query) {
         UrlParams params = UrlParams.parse(query);
-        return params.stream()
-                .allMatch(param -> parameterConditions.matches(param.getKey(), param.getValue()));
+        return params.getParams().stream()
+                .allMatch(param -> parameterConditions.matches(param.getName(), param.getValues()));
     }
 
     private Set<String> findMissingParameters(String query) {
@@ -147,21 +148,23 @@ public class UrlConditions {
                 debugger.message(false, "parameter " + param + " occurs in request");
             }
             UrlParams params = UrlParams.parse(url.getQuery());
-            for (KeyValuePair param : params) {
-                if (parameterConditions.containsKey(param.getKey())) {
-                    boolean matches = parameterConditions.matches(param.getKey(), param.getValue());
-                    String message = "parameter " + param.getKey() + " is " + parameterConditions.describe(param.getKey());
-                    debugger.message(matches, message);
-                } else {
-                    String message = "parameter " + param.getKey() + " is redundant";
-                    debugger.message(false, message);
-                }
-            }
+            params.getParams().forEach(param->printParameterDebugMessage(param,debugger));
 
         } catch (MalformedURLException e) {
             System.out.println("Can't parse URL: " + request.uri());
         }
 
+    }
+
+    private void printParameterDebugMessage(ParameterValue param, Debugger debugger) {
+        if (parameterConditions.containsKey(param.getName())) {
+            boolean matches = parameterConditions.matches(param.getName(), param.getValues());
+            String message = "parameter " + param.getName() + " has matching value";
+            debugger.message(matches, message);
+        } else {
+            String message = "parameter " + param.getName() + " is redundant";
+            debugger.message(false, message);
+        }
     }
 
     private String describe(Matcher<String> matcher) {
