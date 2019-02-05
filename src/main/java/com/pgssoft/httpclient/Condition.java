@@ -6,7 +6,7 @@ public interface Condition {
     boolean matches(HttpRequest request);
 
     default String getDebugMessage() {
-        return getClass().getSimpleName();
+        return "Anonymous condition";
     }
 
 }

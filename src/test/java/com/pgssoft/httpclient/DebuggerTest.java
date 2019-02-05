@@ -219,6 +219,35 @@ public class DebuggerTest {
         assertTrue(debugger.matching.contains("port is <8080>"));
     }
 
+    @Test
+    public void should_use_anonymous_message_for_conditions_without_debug_message() throws Exception {
+        httpClientMock.onGet("http://localhost:8080/login")
+                .with(new TestCondition())
+                .doReturn("login");
+        httpClientMock.debugOn();
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
+        assertTrue(debugger.matching.contains("Anonymous condition"));
+    }
+
+    @Test
+    public void should_use_anonymous_message_for_lambda_conditions() throws Exception {
+        httpClientMock.onGet("http://localhost:8080/login")
+                .with(req->true)
+                .doReturn("login");
+        httpClientMock.debugOn();
+        try {
+            httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).POST(noBody()).build(), discarding());
+        } catch (IllegalStateException e) {
+            // discard exception
+        }
+        assertTrue(debugger.matching.contains("Anonymous condition"));
+    }
+
+
     private class TestDebugger extends Debugger {
         private final ArrayList<String> matching = new ArrayList<>();
         private final ArrayList<String> notMatching = new ArrayList<>();
@@ -239,5 +268,14 @@ public class DebuggerTest {
                 this.notMatching.add(expected);
             }
         }
+    }
+}
+
+
+class TestCondition implements  Condition {
+
+    @Override
+    public boolean matches(HttpRequest request) {
+        return true;
     }
 }

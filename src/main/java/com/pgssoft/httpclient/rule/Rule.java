@@ -48,6 +48,6 @@ public final class Rule {
     }
 
     private void debugCondition(Condition condition, HttpRequest request, Debugger debugger) {
-        debugger.message(matches(request), condition.getDebugMessage());
+        debugger.message(condition.matches(request), condition.getDebugMessage());
     }
 }

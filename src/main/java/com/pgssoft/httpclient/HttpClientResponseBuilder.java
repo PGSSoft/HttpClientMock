@@ -64,14 +64,19 @@ public final class HttpClientResponseBuilder {
     }
 
     public HttpClientResponseBuilder doReturnJSON(String response, Charset charset) {
-        return doReturn(response, charset).withHeader("Content-type", APPLICATION_JSON);
+        return doReturn(response, charset).withHeader("Content-type", contentTypeHeader(APPLICATION_JSON,charset));
     }
+
 
     public HttpClientResponseBuilder doReturnXML(String response) {
         return doReturnXML(response, StandardCharsets.UTF_8);
     }
 
     public HttpClientResponseBuilder doReturnXML(String response, Charset charset) {
-        return doReturn(response, charset).withHeader("Content-type", APPLICATION_XML);
+        return doReturn(response, charset).withHeader("Content-type", contentTypeHeader(APPLICATION_XML,charset));
+    }
+
+    private String contentTypeHeader(String type, Charset charset) {
+        return String.format("%s; charset=%s",type,charset.name());
     }
 }

@@ -197,25 +197,35 @@ public class HttpClientResponseBuilderTest {
     @Test
     public void should_return_json_with_right_header() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
-        httpClientMock.onGet("/login")
-                .doReturnJSON("{foo:1}", Charset.forName("UTF-8"));
+        httpClientMock.onGet("/foo")
+                .doReturnJSON("{foo:1}", Charset.forName("UTF-16"));
+        httpClientMock.onGet("/bar")
+                .doReturnJSON("{bar:1}");
 
-        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
+        final var foo = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo")).GET().build(), ofString());
+        final var bar = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/bar")).GET().build(), ofString());
+        assertThat(foo, hasContent("{foo:1}"));
+        assertThat(foo.headers().firstValue("Content-type").get(), equalTo("application/json; charset=UTF-16"));
 
-        assertThat(login, hasContent("{foo:1}"));
-        assertThat(login.headers().firstValue("Content-type").orElse(null), equalTo("application/json"));
+        assertThat(bar, hasContent("{bar:1}"));
+        assertThat(bar.headers().firstValue("Content-type").get(), equalTo("application/json; charset=UTF-8"));
     }
 
     @Test
     public void should_return_xml_with_right_header() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
-        httpClientMock.onGet("/login")
-                .doReturnXML("<foo>bar</foo>", Charset.forName("UTF-8"));
+        httpClientMock.onGet("/foo")
+                .doReturnXML("<foo>bar</foo>", Charset.forName("UTF-16"));
+        httpClientMock.onGet("/bar")
+                .doReturnXML("<foo>bar</foo>");
+        final var foo = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo")).GET().build(), ofString());
+        final var bar = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/bar")).GET().build(), ofString());
 
-        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/login")).GET().build(), ofString());
+        assertThat(foo, hasContent("<foo>bar</foo>"));
+        assertThat(foo.headers().firstValue("Content-type").orElse(null), equalTo("application/xml; charset=UTF-16"));
 
-        assertThat(login, hasContent("<foo>bar</foo>"));
-        assertThat(login.headers().firstValue("Content-type").orElse(null), equalTo("application/xml"));
+        assertThat(bar, hasContent("<foo>bar</foo>"));
+        assertThat(bar.headers().firstValue("Content-type").orElse(null), equalTo("application/xml; charset=UTF-8"));
     }
 
     @Test

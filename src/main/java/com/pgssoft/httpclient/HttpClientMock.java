@@ -122,8 +122,8 @@ public final class HttpClientMock extends HttpClient {
      *
      * @return HttpClientMockBuilder which allows  to define new rule
      */
-    public HttpClientMockBuilder onOption() {
-        return newRule("OPTION");
+    public HttpClientMockBuilder onOptions() {
+        return newRule("OPTIONS");
     }
 
     /**

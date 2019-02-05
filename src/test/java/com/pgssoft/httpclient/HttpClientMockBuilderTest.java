@@ -81,7 +81,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void shouldUseRightMethod() throws Exception {
+    public void onXXXX_methods_with_path_should_add_method_and_path_condition() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onGet("/foo").doReturn("get");
@@ -91,6 +91,36 @@ public class HttpClientMockBuilderTest {
         httpClientMock.onHead("/foo").doReturn("head");
         httpClientMock.onOptions("/foo").doReturn("options");
         httpClientMock.onPatch("/foo").doReturn("patch");
+
+        var getResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
+        var postResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).POST(noBody()).build(), ofString());
+        var putResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).PUT(noBody()).build(), ofString());
+        var deleteResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).DELETE().build(), ofString());
+        var headResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).method("HEAD", noBody()).build(), ofString());
+        var optionsResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).method("OPTIONS", noBody()).build(), ofString());
+        var patchResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).method("PATCH", noBody()).build(), ofString());
+
+        MatcherAssert.assertThat(getResponse, HttpResponseMatchers.hasContent("get"));
+        MatcherAssert.assertThat(postResponse, HttpResponseMatchers.hasContent("post"));
+        MatcherAssert.assertThat(putResponse, HttpResponseMatchers.hasContent("put"));
+        MatcherAssert.assertThat(deleteResponse, HttpResponseMatchers.hasContent("delete"));
+        MatcherAssert.assertThat(headResponse, HttpResponseMatchers.hasContent("head"));
+        MatcherAssert.assertThat(optionsResponse, HttpResponseMatchers.hasContent("options"));
+        MatcherAssert.assertThat(patchResponse, HttpResponseMatchers.hasContent("patch"));
+    }
+
+
+    @Test
+    public void onXXXX_methods_should_add_method_condition() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onGet().doReturn("get");
+        httpClientMock.onPost().doReturn("post");
+        httpClientMock.onPut().doReturn("put");
+        httpClientMock.onDelete().doReturn("delete");
+        httpClientMock.onHead().doReturn("head");
+        httpClientMock.onOptions().doReturn("options");
+        httpClientMock.onPatch().doReturn("patch");
 
         var getResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
         var postResponse = httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).POST(noBody()).build(), ofString());
