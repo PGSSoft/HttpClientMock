@@ -11,10 +11,6 @@ public final class SetBodyStringAction implements Action {
     private final String content;
     private final Charset charset;
 
-    public SetBodyStringAction(String content) {
-        this(content, StandardCharsets.UTF_8);
-    }
-
     public SetBodyStringAction(String content, Charset charset) {
         this.content = content;
         this.charset = charset;

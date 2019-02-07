@@ -64,7 +64,7 @@ public final class HttpClientResponseBuilder {
     }
 
     public HttpClientResponseBuilder doReturnJSON(String response, Charset charset) {
-        return doReturn(response, charset).withHeader("Content-type", contentTypeHeader(APPLICATION_JSON,charset));
+        return doReturn(response, charset).withHeader("Content-type", buildContentTypeHeader(APPLICATION_JSON,charset));
     }
 
 
@@ -73,10 +73,10 @@ public final class HttpClientResponseBuilder {
     }
 
     public HttpClientResponseBuilder doReturnXML(String response, Charset charset) {
-        return doReturn(response, charset).withHeader("Content-type", contentTypeHeader(APPLICATION_XML,charset));
+        return doReturn(response, charset).withHeader("Content-type", buildContentTypeHeader(APPLICATION_XML,charset));
     }
 
-    private String contentTypeHeader(String type, Charset charset) {
+    private String buildContentTypeHeader(String type, Charset charset) {
         return String.format("%s; charset=%s",type,charset.name());
     }
 }
