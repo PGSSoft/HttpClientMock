@@ -48,7 +48,7 @@ public final class RuleBuilder {
 
 
     public void setParameterCondition(String name, Matcher<String> matcher) {
-        urlConditions.getParameterConditions().put(name, Matchers.containsInAnyOrder(matcher));
+        urlConditions.getParameterConditions().put(name, Matchers.containsInAnyOrder(List.of(matcher)));
     }
 
     public void setReferenceCondition(Matcher<String> matcher) {
@@ -56,7 +56,7 @@ public final class RuleBuilder {
     }
 
     public void addHostCondition(String host) {
-       //TODO addUrlConditions(UrlConditions.parse(host));
+       urlConditions.setHostConditions(Matchers.equalTo(host));
     }
 
     public void setPathCondition(Matcher<String> matcher) {

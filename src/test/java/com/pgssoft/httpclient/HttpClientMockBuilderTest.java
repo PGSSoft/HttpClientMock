@@ -22,7 +22,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HttpClientMockBuilderTest {
 
@@ -31,16 +30,13 @@ public class HttpClientMockBuilderTest {
         HttpClientMock httpClientMock = new HttpClientMock();
 
         httpClientMock.onPost()
-                .withHost("http://localhost")
+                .withHost("localhost")
                 .withPath("/login")
                 .doReturnStatus(200);
 
-        var req = newBuilder(URI.create("http://localhost/login"))
-                .POST(noBody())
-                .build();
-        var res = httpClientMock.send(req, discarding());
-
-        assertThat(res.statusCode(), equalTo(200));
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(post("http://www.google.com/login"), discarding()));
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(post("http://localhost/foo"), discarding()));
+        assertThat(httpClientMock.send(post("http://localhost/login"), discarding()).statusCode(), equalTo(200));
     }
 
     @Test
@@ -259,7 +255,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void should_not_match_URL_with_missing_param() throws Exception {
+    public void should_not_match_URL_with_missing_param() {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login?user=john")
@@ -341,7 +337,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void not_all_parameters_occurred() throws Exception {
+    public void not_all_parameters_occurred() {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login")

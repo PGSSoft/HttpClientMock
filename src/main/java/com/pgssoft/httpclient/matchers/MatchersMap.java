@@ -15,7 +15,4 @@ public class MatchersMap<K, V> extends HashMap<K, Matcher<V>> {
         return this.putIfAbsent(name, value);
     }
 
-    public String describe(String name) {
-        return StringDescription.toString(get(name));
-    }
 }

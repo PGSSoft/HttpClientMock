@@ -14,18 +14,6 @@ class UrlParams {
         return params.stream().anyMatch(p -> p.getName().equals(name));
     }
 
-    public List<String> getNames() {
-        return params.stream().map(ParameterValue::getName).collect(Collectors.toList());
-    }
-
-    public List<String> getValue(String paramName) {
-        return params.stream()
-                .filter(p -> p.getName().equals(paramName))
-                .map(ParameterValue::getValues)
-                .findFirst()
-                .orElse(Collections.emptyList());
-    }
-
     public List<ParameterValue> getParams() {
         return params;
     }

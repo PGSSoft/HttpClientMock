@@ -192,4 +192,18 @@ public class HttpClientVerifyTest {
         httpClientMock.verify().get("/login").withHeader("User-Agent", "Chrome").called();
         httpClientMock.verify().get("/login").withHeader("User-Agent", "IE").notCalled();
     }
+
+    @Test
+    public void should_verify_each_part_of_URL_in_separate() throws Exception {
+        final HttpClientMock httpClientMock = new HttpClientMock();
+
+        httpClientMock.onGet("http://localhost:8080/login?foo=bar#ref").doReturn("OK");
+
+        httpClientMock.debugOn();
+        httpClientMock.send(TestRequests.get("http://localhost:8080/login?foo=bar#ref"), discarding());
+
+        httpClientMock.verify().get().withHost("localhost").called();
+        httpClientMock.verify().get().withHost("google").notCalled();
+       }
+
 }

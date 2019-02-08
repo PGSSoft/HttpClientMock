@@ -3,6 +3,8 @@ package com.pgssoft.httpclient;
 import com.pgssoft.httpclient.internal.UrlConditions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UrlParsingTest {
@@ -13,8 +15,7 @@ public class UrlParsingTest {
     public void parseHost() {
         UrlConditions urlConditions = UrlConditions.parse("http://localhost");
         assertTrue(urlConditions.getHostConditions().matches("localhost"));
-        // TODO: Should this assert be enabled? I don't think we should get a -1 when port is missing.   ~rskupnik
-        //assertTrue(urlConditions.getPortConditions().get(0).matches(EMPTY_PORT_NUMBER));
+        assertTrue(urlConditions.getPortConditions().matches(EMPTY_PORT_NUMBER));
         assertTrue(urlConditions.getReferenceConditions().matches(""));
     }
 
@@ -38,8 +39,8 @@ public class UrlParsingTest {
         UrlConditions urlConditions = UrlConditions.parse("http://localhost/foo/bar?a=1&b=2");
         assertTrue(urlConditions.getHostConditions().matches("localhost"));
         assertTrue(urlConditions.getPathConditions().matches("/foo/bar"));
-        assertTrue(urlConditions.getParameterConditions().get("a").matches(Lists.of("1")));
-        assertTrue(urlConditions.getParameterConditions().get("b").matches(Lists.of("2")));
+        assertTrue(urlConditions.getParameterConditions().get("a").matches(List.of("1")));
+        assertTrue(urlConditions.getParameterConditions().get("b").matches(List.of("2")));
     }
 
     @Test

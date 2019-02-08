@@ -18,7 +18,7 @@ public class HttpClientMockAsyncTest {
         HttpClientMock httpClientMock = new HttpClientMock();
 
         httpClientMock.onPost()
-                .withHost("http://localhost")
+                .withHost("localhost")
                 .withPath("/login")
                 .doReturn(200, "ABC");
 

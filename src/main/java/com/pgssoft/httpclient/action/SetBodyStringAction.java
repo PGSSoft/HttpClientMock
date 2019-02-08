@@ -4,7 +4,6 @@ import com.pgssoft.httpclient.Action;
 import com.pgssoft.httpclient.MockedServerResponse;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public final class SetBodyStringAction implements Action {
 

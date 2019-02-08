@@ -28,6 +28,7 @@ public final class HttpResponseMatchers {
 
     public static Matcher<? super HttpResponse> hasContent(final String content) {
         return new BaseMatcher<>() {
+            @SuppressWarnings("unchecked")
             @Override
             public boolean matches(Object o) {
                 if (!(o instanceof HttpResponse)) {
