@@ -2,9 +2,13 @@ package com.pgssoft.httpclient;
 
 import com.pgssoft.httpclient.matchers.HttpResponseMatchers;
 import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
@@ -387,4 +391,21 @@ public class HttpClientMockBuilderTest {
         MatcherAssert.assertThat(login, HttpResponseMatchers.hasContent("login"));
         MatcherAssert.assertThat(google, HttpResponseMatchers.hasContent("google"));
     }
+
+    @Test
+    public void response_should_contain_request_headers_body_uri_version() throws IOException, URISyntaxException {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+        httpClientMock.onGet("/login")
+                .doReturn("login")
+                .withHeader("foo","bar");
+        var request = newBuilder(URI.create("http://localhost/login")).GET().build();
+        var response = httpClientMock.send(request, ofString());
+        assertThat(response.uri(), Matchers.equalTo(new URI("http://localhost/login")));
+        assertThat(response.request(),Matchers.equalTo(request));
+        assertThat(response.body(), Matchers.equalTo("login"));
+        assertThat(response.headers().firstValue("foo").get() , Matchers.equalTo("bar"));
+        assertThat(response.version(), Matchers.equalTo(HttpClient.Version.HTTP_1_1));
+
+    }
+
 }

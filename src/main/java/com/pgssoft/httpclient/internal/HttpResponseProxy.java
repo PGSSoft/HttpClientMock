@@ -12,9 +12,11 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
 
     private final int statusCode;
     private final HttpHeaders headers;
+    private final HttpRequest request;
     private T body;
 
-    public HttpResponseProxy(int statusCode, HttpHeaders headers, T body) {
+    public HttpResponseProxy(int statusCode, HttpHeaders headers, T body, HttpRequest request) {
+        this.request = request;
         this.statusCode = statusCode;
         this.headers = headers;
         this.body = body;
@@ -27,7 +29,7 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
 
     @Override
     public HttpRequest request() {
-        return null;
+        return request;
     }
 
     @Override
@@ -52,12 +54,12 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
 
     @Override
     public URI uri() {
-        return null;
+        return request.uri();
     }
 
     @Override
     public HttpClient.Version version() {
-        return null;
+        return request.version().orElse(HttpClient.Version.HTTP_1_1);
     }
 
 }

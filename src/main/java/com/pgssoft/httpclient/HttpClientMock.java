@@ -280,7 +280,7 @@ public final class HttpClientMock extends HttpClient {
         var serverResponse = rule.produceResponse();
         var body = submitToBodyHandler(serverResponse, responseBodyHandler);
         var httpHeaders = HttpHeaders.of(serverResponse.headers(), (a, b) -> true);
-        return new HttpResponseProxy<>(serverResponse.statusCode(), httpHeaders, body);
+        return new HttpResponseProxy<>(serverResponse.statusCode(), httpHeaders, body, request);
     }
 
     private Rule findNextRule(HttpRequest request) {
@@ -316,7 +316,7 @@ public final class HttpClientMock extends HttpClient {
             var serverResponse = rule.produceResponse();
             var body = submitToBodyHandler(serverResponse, responseBodyHandler);
             var httpHeaders = HttpHeaders.of(serverResponse.headers(), (a, b) -> true);
-            var response = new HttpResponseProxy<>(serverResponse.statusCode(), httpHeaders, body);
+            var response = new HttpResponseProxy<>(serverResponse.statusCode(), httpHeaders, body, request);
             return CompletableFuture.completedFuture(response);
         } catch (IOException e) {
             throw new IllegalStateException(e);
