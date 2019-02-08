@@ -12,6 +12,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import static com.pgssoft.httpclient.TestRequests.get;
+import static com.pgssoft.httpclient.TestRequests.post;
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
@@ -19,6 +21,7 @@ import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HttpClientMockBuilderTest {
@@ -67,21 +70,10 @@ public class HttpClientMockBuilderTest {
                 ofString()
         );
 
-        boolean exceptionThrown = false;
-        try {
-            httpClientMock.send(
-                    newBuilder(URI.create("http://localhost/login?a=1&b=2"))
-                            .POST(noBody())
-                            .build(),
-                    ofString()
-            );
-        } catch (IllegalStateException e) {
-            exceptionThrown = true;
-        }
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(post("http://localhost/login?a=1&b=2"), ofString()));
 
         MatcherAssert.assertThat(firstResponse, HttpResponseMatchers.hasContent("one"));
         MatcherAssert.assertThat(secondResponse, HttpResponseMatchers.hasContent("two"));
-        assertTrue(exceptionThrown);
     }
 
     @Test
@@ -166,7 +158,7 @@ public class HttpClientMockBuilderTest {
         httpClientMock.onGet("https://www.google.com").doReturn("https");
 
         final HttpResponse localhost = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo")).GET().build(), ofString());
-        final HttpResponse google = httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), ofString());
+        final HttpResponse google = httpClientMock.send(get("http://www.google.com"), ofString());
         final HttpResponse https = httpClientMock.send(newBuilder(URI.create("https://www.google.com")).GET().build(), ofString());
 
         MatcherAssert.assertThat(localhost, HttpResponseMatchers.hasContent("localhost"));
@@ -267,23 +259,27 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void when_url_contains_reference_it_should_be_added_as_a_separate_condition() throws Exception {
+    public void should_not_match_URL_with_missing_param() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
-        httpClientMock.onPost("/login")
+        httpClientMock.onPost("/login?user=john")
                 .doReturnStatus(400);
-        httpClientMock.onPost("/login#abc")
+        httpClientMock.onPost("/login?user=john&pass=abc")
                 .doReturnStatus(200);
-
-        //HttpResponse wrong = httpClientMock.execute(new HttpPost("http://localhost/login"));
-        //HttpResponse ok = httpClientMock.execute(new HttpPost("http://localhost/login#abc"));
-
-        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
-        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login#abc")).POST(noBody()).build(), discarding());
-
-        MatcherAssert.assertThat(wrong, HttpResponseMatchers.hasStatus(400));
-        MatcherAssert.assertThat(ok, HttpResponseMatchers.hasStatus(200));
+        var request = newBuilder(URI.create("http://localhost/login")).POST(noBody()).build();
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(request, discarding()));
     }
+
+    @Test
+    public void should_not_match_URL_with_surplus_param() {
+        HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
+
+        httpClientMock.onPost("/login?user=john")
+                .doReturnStatus(200);
+        var request = newBuilder(URI.create("http://localhost/login?user=john&pass=abc")).POST(noBody()).build();
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(request, discarding()));
+    }
+
 
     @Test
     public void should_handle_path_with_parameters_and_reference() throws Exception {
@@ -292,18 +288,11 @@ public class HttpClientMockBuilderTest {
         httpClientMock.onPost("/login?p=1#abc")
                 .doReturnStatus(200);
 
-        // TODO: Check for exceptions on wrong cases once it's implemented
-
-//        HttpResponse wrong1 = httpClientMock.execute(new HttpPost("http://localhost/login"));
-//        HttpResponse wrong2 = httpClientMock.execute(new HttpPost("http://localhost/login?p=1"));
-//        HttpResponse wrong3 = httpClientMock.execute(new HttpPost("http://localhost/login#abc"));
-//        HttpResponse ok = httpClientMock.execute(new HttpPost("http://localhost/login?p=1#abc"));
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(post("http://localhost/login"), discarding()));
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(post("http://localhost/login?p=1"), discarding()));
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(post("http://localhost/login#abc"), discarding()));
 
         final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login?p=1#abc")).POST(noBody()).build(), discarding());
-
-//        assertThat(wrong1, hasStatus(404));
-//        assertThat(wrong2, hasStatus(404));
-//        assertThat(wrong3, hasStatus(404));
         MatcherAssert.assertThat(ok, HttpResponseMatchers.hasStatus(200));
     }
 
@@ -317,9 +306,6 @@ public class HttpClientMockBuilderTest {
                 .withReference("ref")
                 .doReturnStatus(200);
 
-        //HttpResponse wrong = httpClientMock.execute(new HttpPost("http://localhost/login"));
-        //HttpResponse ok = httpClientMock.execute(new HttpPost("http://localhost/login#ref"));
-
         final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
         final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login#ref")).POST(noBody()).build(), discarding());
 
@@ -328,16 +314,13 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void after_reset_every_call_should_result_in_status_404() {
+    public void after_reset_every_call_should_throw_exception() {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login").doReturnStatus(200);
         httpClientMock.reset();
 
-        //HttpResponse login = httpClientMock.execute(new HttpPost("http://localhost/login"));
-
-        //assertThat(login, hasStatus(404));
-        // TODO: Check for exception once implemented
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(post("http://localhost/login"), discarding()));
     }
 
     @Test
@@ -345,14 +328,14 @@ public class HttpClientMockBuilderTest {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login").doReturnStatus(200);
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
+        httpClientMock.send(post("http://localhost/login"), discarding());
+        httpClientMock.send(post("http://localhost/login"), discarding());
         httpClientMock.reset();
         httpClientMock.verify().post("/login").notCalled();
 
         httpClientMock.onPost("/login").doReturnStatus(200);
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
-        httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), discarding());
+        httpClientMock.send(post("http://localhost/login"), discarding());
+        httpClientMock.send(post("http://localhost/login"), discarding());
         httpClientMock.verify().post("/login").called(2);
 
     }
@@ -365,14 +348,7 @@ public class HttpClientMockBuilderTest {
                 .withParameter("foo", "bar")
                 .doReturnStatus(200);
 
-        boolean exceptionThrown = false;
-        try {
-            final var response = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).POST(noBody()).build(), ofString());
-        } catch (IllegalStateException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        assertThrows(NoMatchingRuleException.class, () -> httpClientMock.send(post("http://localhost/login"), ofString()));
     }
 
     @Test
@@ -382,11 +358,8 @@ public class HttpClientMockBuilderTest {
         httpClientMock.onGet("/login").doReturn("login");
         httpClientMock.onGet("http://www.google.com").doReturn("google");
 
-        //HttpResponse login = httpClientMock.execute(new HttpGet("http://localhost/login"));
-        //HttpResponse google = httpClientMock.execute(new HttpGet("http://www.google.com"));
-
-        final var login = httpClientMock.send(newBuilder(URI.create("http://localhost/login")).GET().build(), ofString());
-        final var google = httpClientMock.send(newBuilder(URI.create("http://www.google.com")).GET().build(), ofString());
+        final var login = httpClientMock.send(get("http://localhost/login"), ofString());
+        final var google = httpClientMock.send(get("http://www.google.com"), ofString());
 
         MatcherAssert.assertThat(login, HttpResponseMatchers.hasContent("login"));
         MatcherAssert.assertThat(google, HttpResponseMatchers.hasContent("google"));
@@ -397,15 +370,16 @@ public class HttpClientMockBuilderTest {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
         httpClientMock.onGet("/login")
                 .doReturn("login")
-                .withHeader("foo","bar");
-        var request = newBuilder(URI.create("http://localhost/login")).GET().build();
+                .withHeader("foo", "bar");
+        var request = get("http://localhost/login");
         var response = httpClientMock.send(request, ofString());
         assertThat(response.uri(), Matchers.equalTo(new URI("http://localhost/login")));
-        assertThat(response.request(),Matchers.equalTo(request));
+        assertThat(response.request(), Matchers.equalTo(request));
         assertThat(response.body(), Matchers.equalTo("login"));
-        assertThat(response.headers().firstValue("foo").get() , Matchers.equalTo("bar"));
+        assertThat(response.headers().firstValue("foo").get(), Matchers.equalTo("bar"));
         assertThat(response.version(), Matchers.equalTo(HttpClient.Version.HTTP_1_1));
 
     }
+
 
 }
