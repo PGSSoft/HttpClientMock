@@ -22,11 +22,12 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HttpClientMockBuilderTest {
+class HttpClientMockBuilderTest {
 
     @Test
-    public void shouldMatchSeparateHostAndPath() throws Exception {
+    void shouldMatchSeparateHostAndPath() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock();
 
         httpClientMock.onPost()
@@ -40,7 +41,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void shouldMatchSeparatePathAndParameter() throws Exception {
+    void shouldMatchSeparatePathAndParameter() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost()
@@ -73,7 +74,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void onXXXX_methods_with_path_should_add_method_and_path_condition() throws Exception {
+    void onXXXX_methods_with_path_should_add_method_and_path_condition() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onGet("/foo").doReturn("get");
@@ -103,7 +104,7 @@ public class HttpClientMockBuilderTest {
 
 
     @Test
-    public void onXXXX_methods_should_add_method_condition() throws Exception {
+    void onXXXX_methods_should_add_method_condition() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onGet().doReturn("get");
@@ -132,7 +133,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void shouldCheckCustomRule() throws Exception {
+    void shouldCheckCustomRule() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         final Condition fooCondition = request -> request.uri().toString().contains("foo");
@@ -146,7 +147,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void shouldUseRightHostAndPath() throws Exception {
+    void shouldUseRightHostAndPath() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock();
 
         httpClientMock.onGet("http://localhost:8080/foo").doReturn("localhost");
@@ -163,7 +164,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void shouldMatchRightHeaderValue() throws Exception {
+    void shouldMatchRightHeaderValue() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
 
         httpClientMock
@@ -183,7 +184,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void should_match_right_parameter_value() throws Exception {
+    void should_match_right_parameter_value() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
 
         httpClientMock
@@ -201,7 +202,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void should_add_default_host_to_every_relative_path() throws Exception {
+    void should_add_default_host_to_every_relative_path() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
 
         httpClientMock.onGet("/login").doReturn("login");
@@ -218,7 +219,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void checkBody() throws Exception {
+    void checkBody() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
 
         httpClientMock.onPost("/login")
@@ -234,7 +235,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void when_url_contains_parameter_it_should_be_added_us_a_separate_condition() throws Exception {
+    void when_url_contains_parameter_it_should_be_added_us_a_separate_condition() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login?user=john")
@@ -255,7 +256,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void should_not_match_URL_with_missing_param() {
+    void should_not_match_URL_with_missing_param() {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login?user=john")
@@ -267,7 +268,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void should_not_match_URL_with_surplus_param() {
+    void should_not_match_URL_with_surplus_param() {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login?user=john")
@@ -278,7 +279,7 @@ public class HttpClientMockBuilderTest {
 
 
     @Test
-    public void should_handle_path_with_parameters_and_reference() throws Exception {
+    void should_handle_path_with_parameters_and_reference() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login?p=1#abc")
@@ -293,7 +294,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void should_check_reference_value() throws Exception {
+    void should_check_reference_value() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login")
@@ -310,7 +311,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void after_reset_every_call_should_throw_exception() {
+    void after_reset_every_call_should_throw_exception() {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login").doReturnStatus(200);
@@ -320,7 +321,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void after_reset_number_of_calls_should_be_zero() throws Exception {
+    void after_reset_number_of_calls_should_be_zero() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login").doReturnStatus(200);
@@ -337,7 +338,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void not_all_parameters_occurred() {
+    void not_all_parameters_occurred() {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onPost("/login")
@@ -348,7 +349,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void should_allow_different_host_then_default() throws Exception {
+    void should_allow_different_host_then_default() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onGet("/login").doReturn("login");
@@ -362,7 +363,7 @@ public class HttpClientMockBuilderTest {
     }
 
     @Test
-    public void response_should_contain_request_headers_body_uri_version() throws IOException, URISyntaxException {
+    void response_should_contain_request_headers_body_uri_version() throws IOException, URISyntaxException {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
         httpClientMock.onGet("/login")
                 .doReturn("login")
@@ -372,6 +373,7 @@ public class HttpClientMockBuilderTest {
         assertThat(response.uri(), Matchers.equalTo(new URI("http://localhost/login")));
         assertThat(response.request(), Matchers.equalTo(request));
         assertThat(response.body(), Matchers.equalTo("login"));
+        assertTrue(response.headers().firstValue("foo").isPresent());
         assertThat(response.headers().firstValue("foo").get(), Matchers.equalTo("bar"));
         assertThat(response.version(), Matchers.equalTo(HttpClient.Version.HTTP_1_1));
 

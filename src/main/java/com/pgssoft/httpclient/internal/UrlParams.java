@@ -8,9 +8,9 @@ import static java.util.stream.Collectors.toList;
 
 class UrlParams {
 
-    ArrayList<ParameterValue> params = new ArrayList<>();
+    private final ArrayList<ParameterValue> params = new ArrayList<>();
 
-    boolean contain(String name) {
+    boolean contains(String name) {
         return params.stream().anyMatch(p -> p.getName().equals(name));
     }
 
@@ -24,9 +24,7 @@ class UrlParams {
             return new UrlParams();
         } else {
             UrlParams urlParams = new UrlParams();
-            splitQuery(query).forEach((k, v) -> {
-                v.forEach(str -> urlParams.params.add(new ParameterValue(k,v)));
-            });
+            splitQuery(query).forEach((k, v) -> urlParams.params.add(new ParameterValue(k, v)));
             return urlParams;
         }
     }

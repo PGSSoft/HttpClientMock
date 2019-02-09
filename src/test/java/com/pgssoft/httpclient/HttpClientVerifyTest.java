@@ -13,10 +13,10 @@ import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-public class HttpClientVerifyTest {
+class HttpClientVerifyTest {
 
     @Test
-    public void shouldHandleAllHttpMethodsWithURL() throws Exception {
+    void shouldHandleAllHttpMethodsWithURL() throws Exception {
 
         final HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://localhost").doReturn("empty");
@@ -45,7 +45,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void shouldHandleAllHttpMethodsWithoutURL() throws Exception {
+    void shouldHandleAllHttpMethodsWithoutURL() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://localhost").doReturn("empty");
         httpClientMock.onPost("http://localhost").doReturn("empty");
@@ -73,7 +73,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void shouldCountNumberOfHttpMethodCalls() throws Exception {
+    void shouldCountNumberOfHttpMethodCalls() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
 
         httpClientMock.onGet("http://localhost").doReturn("empty");
@@ -102,7 +102,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void shouldCountNumberOfUrlCalls() throws Exception {
+    void shouldCountNumberOfUrlCalls() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://localhost").doReturn("empty");
         httpClientMock.onGet("http://www.google.com").doReturn("empty");
@@ -126,7 +126,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void shouldVerifyBodyContent() throws Exception {
+    void shouldVerifyBodyContent() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onPost("http://localhost").withBody(containsString("foo")).doReturn("empty");
         httpClientMock.onPost("http://localhost").withBody(containsString("foo")).doReturn("empty");
@@ -145,7 +145,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void should_handle_path_with_query_parameter() throws Exception {
+    void should_handle_path_with_query_parameter() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onPost("http://localhost").withParameter("a", "1").withParameter("b", "2").withParameter("c", "3").doReturn("empty");
         httpClientMock.onPost("http://localhost").withParameter("a", "1").withParameter("b", "2").doReturn("empty");
@@ -166,7 +166,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void should_handle_path_with_reference() throws Exception {
+    void should_handle_path_with_reference() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onPost().withParameter("a", "1").withReference("abc").doReturn("empty");
         httpClientMock.onPost().withReference("xyz").doReturn("empty");
@@ -181,7 +181,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void should_throw_exception_when_number_of_calls_is_wrong() {
+    void should_throw_exception_when_number_of_calls_is_wrong() {
         Assertions.assertThrows(IllegalStateException.class, () -> {
             final HttpClientMock httpClientMock = new HttpClientMock();
 
@@ -194,7 +194,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void should_allow_different_host_then_default() throws Exception {
+    void should_allow_different_host_then_default() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onGet("/login").doReturn("login");
@@ -208,7 +208,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void should_check_header() throws Exception {
+    void should_check_header() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
 
         httpClientMock.onGet("/login").doReturn("OK");
@@ -222,7 +222,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void should_verify_each_part_of_URL_in_separate() throws Exception {
+    void should_verify_each_part_of_URL_in_separate() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://localhost:8080/login?foo=bar#ref").doReturn("OK");
         httpClientMock.send(TestRequests.get("http://localhost:8080/login?foo=bar#ref"), discarding());
@@ -239,7 +239,7 @@ public class HttpClientVerifyTest {
     }
 
     @Test
-    public void should_verify_custom_condition() throws Exception {
+    void should_verify_custom_condition() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://localhost:8080/login?foo=bar#ref").doReturn("OK");
         httpClientMock.send(TestRequests.get("http://localhost:8080/login?foo=bar#ref"), discarding());

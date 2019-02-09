@@ -4,21 +4,25 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class UrlParamsTest {
+class UrlParamsTest {
 
     @Test
-    public void shouldParseQueryString() {
-        List<ParameterValue> params = UrlParams.parse("a=1&b=2").getParams();
+    void shouldParseQueryString() {
+        UrlParams urlParams = UrlParams.parse("a=1&b=2");
+        List<ParameterValue> params = urlParams.getParams();
         assertEquals("a", params.get(0).getName());
         assertEquals("1", params.get(0).getValues().get(0));
         assertEquals("b", params.get(1).getName());
         assertEquals("2", params.get(1).getValues().get(0));
+        assertTrue(urlParams.contains("a"));
+        assertTrue(urlParams.contains("b"));
+        assertFalse(urlParams.contains("c"));
     }
 
     @Test
-    public void shouldReturnEmptyListForNull() {
+    void shouldReturnEmptyListForNull() {
         assertEquals(0, UrlParams.parse(null).getParams().size());
     }
 

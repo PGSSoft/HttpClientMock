@@ -31,7 +31,7 @@ public class MockedServerResponse {
     public final static class Builder {
 
         private int statusCode;
-        private Map<String, List<String>> headers = new HashMap<>();
+        private final Map<String, List<String>> headers = new HashMap<>();
         private ByteBuffer bodyBytes = ByteBuffer.wrap(new byte[]{});
 
         public void setStatusCode(int statusCode) {

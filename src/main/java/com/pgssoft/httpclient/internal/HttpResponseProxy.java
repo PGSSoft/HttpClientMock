@@ -13,7 +13,7 @@ public class HttpResponseProxy<T> implements HttpResponse<T> {
     private final int statusCode;
     private final HttpHeaders headers;
     private final HttpRequest request;
-    private T body;
+    private final T body;
 
     public HttpResponseProxy(int statusCode, HttpHeaders headers, T body, HttpRequest request) {
         this.request = request;

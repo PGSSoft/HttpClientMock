@@ -3,17 +3,16 @@ package com.pgssoft.httpclient;
 import com.pgssoft.httpclient.internal.UrlConditions;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UrlParsingTest {
+class UrlParsingTest {
 
     private static final int EMPTY_PORT_NUMBER = -1;
 
     @Test
-    public void parseHost() {
+    void parseHost() {
         UrlConditions urlConditions = UrlConditions.parse("http://localhost");
+        assertTrue(urlConditions.getSchemaCondition().matches("http"));
         assertTrue(urlConditions.getHostCondition().matches("localhost"));
         assertTrue(urlConditions.getPortCondition().matches(EMPTY_PORT_NUMBER));
         assertTrue(urlConditions.getReferenceCondition().matches(""));
@@ -21,21 +20,21 @@ public class UrlParsingTest {
 
 
     @Test
-    public void parseHostWithPort() {
+    void parseHostWithPort() {
         UrlConditions urlConditions = UrlConditions.parse("http://localhost:8080");
         assertTrue(urlConditions.getHostCondition().matches("localhost"));
         assertTrue(urlConditions.getPortCondition().matches(8080));
     }
 
     @Test
-    public void parseHostAndPath() {
+    void parseHostAndPath() {
         UrlConditions urlConditions = UrlConditions.parse("http://localhost/foo/bar");
         assertTrue(urlConditions.getHostCondition().matches("localhost"));
         assertTrue(urlConditions.getPathCondition().matches("/foo/bar"));
     }
 
     @Test
-    public void parseHostAndPathAndParameters() {
+    void parseHostAndPathAndParameters() {
         UrlConditions urlConditions = UrlConditions.parse("http://localhost/foo/bar?a=1&b=2");
         assertTrue(urlConditions.getHostCondition().matches("localhost"));
         assertTrue(urlConditions.getPathCondition().matches("/foo/bar"));
@@ -44,7 +43,7 @@ public class UrlParsingTest {
     }
 
     @Test
-    public void parseHostReference() {
+    void parseHostReference() {
         UrlConditions urlConditions = UrlConditions.parse("http://localhost#abc");
         assertTrue(urlConditions.getHostCondition().matches("localhost"));
         assertTrue(urlConditions.getReferenceCondition().matches("abc"));

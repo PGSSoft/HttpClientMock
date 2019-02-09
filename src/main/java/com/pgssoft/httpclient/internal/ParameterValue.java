@@ -2,10 +2,10 @@ package com.pgssoft.httpclient.internal;
 
 import java.util.List;
 
-public class ParameterValue {
+class ParameterValue {
 
-    String name;
-    List<String> values;
+    final String name;
+    final List<String> values;
 
     public ParameterValue(String name, List<String> values) {
         this.name = name;

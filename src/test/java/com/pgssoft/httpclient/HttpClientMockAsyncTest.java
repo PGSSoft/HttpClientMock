@@ -11,10 +11,10 @@ import static java.net.http.HttpRequest.newBuilder;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class HttpClientMockAsyncTest {
+class HttpClientMockAsyncTest {
 
     @Test
-    public void sendAsync_Should_ReturnCompletedFuture() throws ExecutionException, InterruptedException {
+    void sendAsync_Should_ReturnCompletedFuture() throws ExecutionException, InterruptedException {
         HttpClientMock httpClientMock = new HttpClientMock();
 
         httpClientMock.onPost()

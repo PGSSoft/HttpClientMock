@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.pgssoft.httpclient.TestRequests.*;
-import static com.pgssoft.httpclient.TestRequests.post;
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
@@ -28,13 +27,13 @@ public class DebuggerTest {
     private TestDebugger debugger;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         debugger = new TestDebugger();
         httpClientMock = new HttpClientMock("http://localhost", debugger);
     }
 
     @Test
-    public void should_print_all_request_with_no_matching_rules() throws Exception {
+    void should_print_all_request_with_no_matching_rules() throws Exception {
         httpClientMock.onGet("/admin").doReturn("admin");
 
         try {
@@ -49,7 +48,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_print_all_request_when_debugging_is_turn_on() throws Exception {
+    void should_print_all_request_when_debugging_is_turn_on() throws Exception {
         httpClientMock.onGet("/login").doReturn("login");
         httpClientMock.onGet("/user").doReturn("user");
         httpClientMock.onGet("/admin").doReturn("admin");
@@ -66,7 +65,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_debug_header_condition() throws Exception {
+    void should_debug_header_condition() throws Exception {
         httpClientMock
                 .onGet("/login").withHeader("User-Agent", "Mozilla")
                 .doReturn("mozilla");
@@ -85,7 +84,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_about_missing_parameter() throws Exception {
+    void should_put_message_about_missing_parameter() throws Exception {
         httpClientMock.onGet("/login").withParameter("foo", "bar");
         try {
             httpClientMock.send(get("http://localhost/login"), discarding());
@@ -96,7 +95,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_about_matching_parameter() throws Exception {
+    void should_put_message_about_matching_parameter() throws Exception {
         httpClientMock
                 .onGet("/login").withParameter("foo", "bar")
                 .doReturn("login");
@@ -106,7 +105,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_about_not_matching_parameter() throws Exception {
+    void should_put_message_about_not_matching_parameter() throws Exception {
         httpClientMock.onGet("/login")
                 .withParameter("foo", "bar")
                 .doReturn("login");
@@ -119,7 +118,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_about_redundant_parameter() throws Exception {
+    void should_put_message_about_redundant_parameter() throws Exception {
         httpClientMock.onGet("/login")
                 .doReturn("login");
         try {
@@ -131,7 +130,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_with_all_parameter_matchers() throws Exception {
+    void should_put_message_with_all_parameter_matchers() throws Exception {
         httpClientMock.onGet("/login")
                 .withParameter("foo", Matchers.allOf(Matchers.startsWith("a"), Matchers.endsWith("b")))
                 .doReturn("login");
@@ -141,7 +140,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_about_not_matching_reference() throws Exception {
+    void should_put_message_about_not_matching_reference() throws Exception {
         httpClientMock.onGet("/login#foo")
                 .doReturn("login");
         try {
@@ -153,7 +152,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_about_matching_reference() throws Exception {
+    void should_put_message_about_matching_reference() throws Exception {
         httpClientMock.onGet("/login#foo")
                 .doReturn("login");
         httpClientMock.debugOn();
@@ -163,7 +162,7 @@ public class DebuggerTest {
 
 
     @Test
-    public void should_put_message_about_matching_http_method() throws Exception {
+    void should_put_message_about_matching_http_method() throws Exception {
         httpClientMock.onGet("/login").doReturn("login");
         httpClientMock.debugOn();
         httpClientMock.send(get("http://localhost/login"), discarding());
@@ -171,7 +170,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_about_not_matching_http_method() throws Exception {
+    void should_put_message_about_not_matching_http_method() throws Exception {
         httpClientMock.onGet("/login").doReturn("login");
         httpClientMock.debugOn();
         try {
@@ -183,7 +182,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_about_not_matching_URL() throws Exception {
+    void should_put_message_about_not_matching_URL() throws Exception {
         httpClientMock.onGet("http://localhost:8080/login").doReturn("login");
         httpClientMock.debugOn();
         try {
@@ -198,7 +197,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_put_message_about_matching_URL() throws Exception {
+    void should_put_message_about_matching_URL() {
         httpClientMock.onGet("http://localhost:8080/login").doReturn("login");
         httpClientMock.debugOn();
 
@@ -210,7 +209,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_use_anonymous_message_for_conditions_without_debug_message() throws Exception {
+    void should_use_anonymous_message_for_conditions_without_debug_message() throws Exception {
         httpClientMock.onGet("http://localhost:8080/login")
                 .with(new TestCondition())
                 .doReturn("login");
@@ -224,7 +223,7 @@ public class DebuggerTest {
     }
 
     @Test
-    public void should_use_anonymous_message_for_lambda_conditions() throws Exception {
+    void should_use_anonymous_message_for_lambda_conditions() throws Exception {
         httpClientMock.onGet("http://localhost:8080/login")
                 .with(req -> true)
                 .doReturn("login");

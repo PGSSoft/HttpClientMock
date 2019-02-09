@@ -26,11 +26,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HttpClientResponseBuilderTest {
+class HttpClientResponseBuilderTest {
 
     @Test
-    public void should_throw_exception_when_no_rule_matches() throws Exception {
+    void should_throw_exception_when_no_rule_matches() throws Exception {
         assertThrows(IllegalStateException.class, () -> {
             HttpClientMock httpClientMock = new HttpClientMock();
             httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
@@ -38,7 +39,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_use_next_action_after_every_call() throws Exception {
+    void should_use_next_action_after_every_call() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onGet("/foo")
@@ -73,7 +74,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_support_response_in_different_charsets() throws Exception {
+    void should_support_response_in_different_charsets() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onGet("/foo")
@@ -91,7 +92,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void shouldFailToDecodeBodyWhenDifferentCharsetsUsed() throws Exception {
+    void shouldFailToDecodeBodyWhenDifferentCharsetsUsed() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
         httpClientMock.onGet("/foo").doReturn("output", StandardCharsets.UTF_16);
 
@@ -101,7 +102,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_support_response_in_body_with_status() throws Exception {
+    void should_support_response_in_body_with_status() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
 
         httpClientMock.onGet("/foo")
@@ -128,7 +129,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_throw_exception_when_throwing_action_matched() {
+    void should_throw_exception_when_throwing_action_matched() {
         Assertions.assertThrows(IOException.class, () -> {
             HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
             httpClientMock.onGet("/foo").doThrowException(new IOException());
@@ -137,7 +138,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_return_status_corresponding_to_match() throws Exception {
+    void should_return_status_corresponding_to_match() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
 
         httpClientMock.onGet("/login").doReturnStatus(200);
@@ -154,7 +155,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_do_custom_action() throws Exception {
+    void should_do_custom_action() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onPost("/login").doAction(customAction());
 
@@ -165,7 +166,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_add_header_to_response() throws Exception {
+    void should_add_header_to_response() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onPost("/login")
                 .doReturn("foo").withHeader("tracking", "123")
@@ -179,7 +180,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_add_status_to_response() throws Exception {
+    void should_add_status_to_response() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onGet("/login")
                 .doReturn("foo").withStatus(300);
@@ -192,7 +193,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_return_json_with_right_header() throws Exception {
+    void should_return_json_with_right_header() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onGet("/foo")
                 .doReturnJSON("{foo:1}", Charset.forName("UTF-16"));
@@ -202,14 +203,16 @@ public class HttpClientResponseBuilderTest {
         final var foo = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo")).GET().build(), ofString());
         final var bar = httpClientMock.send(newBuilder(URI.create("http://localhost:8080/bar")).GET().build(), ofString());
         assertThat(foo, hasContent("{foo:1}"));
+        assertTrue(foo.headers().firstValue("Content-type").isPresent());
         assertThat(foo.headers().firstValue("Content-type").get(), equalTo("application/json; charset=UTF-16"));
 
         assertThat(bar, hasContent("{bar:1}"));
+        assertTrue(bar.headers().firstValue("Content-type").isPresent());
         assertThat(bar.headers().firstValue("Content-type").get(), equalTo("application/json; charset=UTF-8"));
     }
 
     @Test
-    public void should_return_xml_with_right_header() throws Exception {
+    void should_return_xml_with_right_header() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onGet("/foo")
                 .doReturnXML("<foo>bar</foo>", Charset.forName("UTF-16"));
@@ -226,7 +229,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_allow_to_return_response_without_body() throws Exception {
+    void should_allow_to_return_response_without_body() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
         httpClientMock.onGet("/login")
                 .doReturnStatus(204);   // no content
@@ -237,7 +240,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void should_throw_exception_when_body_matcher_is_present_on_post_request() throws Exception {
+    void should_throw_exception_when_body_matcher_is_present_on_post_request() throws Exception {
         assertThrows(IllegalStateException.class, () -> {
             HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
             httpClientMock.onPost("/path1")
@@ -249,7 +252,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void shouldRespectBodyHandler() throws Exception {
+    void shouldRespectBodyHandler() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
         // A simple string is passed to indicate what we want to see in the response
         httpClientMock.onGet().doReturn("expected\nnewline");
@@ -265,7 +268,7 @@ public class HttpClientResponseBuilderTest {
     }
 
     @Test
-    public void shouldTransformStringToInputStream() throws Exception {
+    void shouldTransformStringToInputStream() throws Exception {
         final String expectedString = "expected";
         final HttpClientMock httpClientMock = new HttpClientMock("http://localhost");
         httpClientMock.onGet().doReturn(expectedString);
