@@ -1,6 +1,5 @@
 package com.pgssoft.httpclient;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -15,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.pgssoft.httpclient.Asserts.assertThrows;
 import static com.pgssoft.httpclient.matchers.HttpResponseMatchers.hasContent;
 import static com.pgssoft.httpclient.matchers.HttpResponseMatchers.hasStatus;
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
@@ -25,13 +23,12 @@ import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HttpClientResponseBuilderTest {
 
     @Test
-    void should_throw_exception_when_no_rule_matches() throws Exception {
+    void should_throw_exception_when_no_rule_matches() {
         assertThrows(IllegalStateException.class, () -> {
             HttpClientMock httpClientMock = new HttpClientMock();
             httpClientMock.send(newBuilder(URI.create("http://localhost/foo")).GET().build(), ofString());
@@ -130,7 +127,7 @@ class HttpClientResponseBuilderTest {
 
     @Test
     void should_throw_exception_when_throwing_action_matched() {
-        Assertions.assertThrows(IOException.class, () -> {
+        assertThrows(IOException.class, () -> {
             HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
             httpClientMock.onGet("/foo").doThrowException(new IOException());
             httpClientMock.send(newBuilder(URI.create("http://localhost:8080/foo")).GET().build(), discarding());
@@ -240,7 +237,7 @@ class HttpClientResponseBuilderTest {
     }
 
     @Test
-    void should_throw_exception_when_body_matcher_is_present_on_post_request() throws Exception {
+    void should_throw_exception_when_body_matcher_is_present_on_post_request() {
         assertThrows(IllegalStateException.class, () -> {
             HttpClientMock httpClientMock = new HttpClientMock("http://localhost:8080");
             httpClientMock.onPost("/path1")

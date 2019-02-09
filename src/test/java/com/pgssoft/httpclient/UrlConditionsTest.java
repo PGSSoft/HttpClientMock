@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UrlParsingTest {
+class UrlConditionsTest {
 
     private static final int EMPTY_PORT_NUMBER = -1;
 
