@@ -49,4 +49,7 @@ class UrlParams {
         return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 
+    public Set<String> getNames() {
+        return params.stream().map(ParameterValue::getName).collect(Collectors.toSet());
+    }
 }

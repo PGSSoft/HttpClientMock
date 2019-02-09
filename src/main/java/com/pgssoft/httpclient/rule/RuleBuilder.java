@@ -48,15 +48,15 @@ public final class RuleBuilder {
 
 
     public void setParameterCondition(String name, Matcher<String> matcher) {
-        urlConditions.getParameterConditions().put(name, Matchers.containsInAnyOrder(List.of(matcher)));
+        urlConditions.getParameterConditions().addParam(name, Matchers.containsInAnyOrder(List.of(matcher)));
     }
 
     public void setReferenceCondition(Matcher<String> matcher) {
-        urlConditions.setReferenceConditions(matcher);
+        urlConditions.setReferenceCondition(matcher);
     }
 
     public void addHostCondition(String host) {
-       urlConditions.setHostConditions(Matchers.equalTo(host));
+       urlConditions.setHostCondition(Matchers.equalTo(host));
     }
 
     public void setPathCondition(Matcher<String> matcher) {

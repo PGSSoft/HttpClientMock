@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 public class HttpClientVerifyTest {
 
     @Test
-    public void shouldHandleAllHttpMethods() throws Exception {
+    public void shouldHandleAllHttpMethodsWithURL() throws Exception {
 
         final HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://localhost").doReturn("empty");
@@ -42,6 +42,34 @@ public class HttpClientVerifyTest {
         httpClientMock.verify().options("http://localhost").called();
         httpClientMock.verify().head("http://localhost").called();
         httpClientMock.verify().patch("http://localhost").called();
+    }
+
+    @Test
+    public void shouldHandleAllHttpMethodsWithoutURL() throws Exception {
+        final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost").doReturn("empty");
+        httpClientMock.onPost("http://localhost").doReturn("empty");
+        httpClientMock.onPut("http://localhost").doReturn("empty");
+        httpClientMock.onDelete("http://localhost").doReturn("empty");
+        httpClientMock.onHead("http://localhost").doReturn("empty");
+        httpClientMock.onOptions("http://localhost").doReturn("empty");
+        httpClientMock.onPatch("http://localhost").doReturn("empty");
+
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).GET().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).POST(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).DELETE().build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).PUT(noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).method("HEAD", noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).method("OPTIONS", noBody()).build(), discarding());
+        httpClientMock.send(newBuilder(URI.create("http://localhost")).method("PATCH", noBody()).build(), discarding());
+
+        httpClientMock.verify().get().called();
+        httpClientMock.verify().post().called();
+        httpClientMock.verify().delete().called();
+        httpClientMock.verify().put().called();
+        httpClientMock.verify().options().called();
+        httpClientMock.verify().head().called();
+        httpClientMock.verify().patch().called();
     }
 
     @Test
@@ -196,14 +224,27 @@ public class HttpClientVerifyTest {
     @Test
     public void should_verify_each_part_of_URL_in_separate() throws Exception {
         final HttpClientMock httpClientMock = new HttpClientMock();
-
         httpClientMock.onGet("http://localhost:8080/login?foo=bar#ref").doReturn("OK");
-
-        httpClientMock.debugOn();
         httpClientMock.send(TestRequests.get("http://localhost:8080/login?foo=bar#ref"), discarding());
 
         httpClientMock.verify().get().withHost("localhost").called();
         httpClientMock.verify().get().withHost("google").notCalled();
-       }
+        httpClientMock.verify().get().withPath("/login").called();
+        httpClientMock.verify().get().withPath("/logout").notCalled();
+        httpClientMock.verify().get().withParameter("foo","bar").called();
+        httpClientMock.verify().get().withParameter("foo","hoo").notCalled();
+        httpClientMock.verify().get().withReference("ref").called();
+        httpClientMock.verify().get().withReference("fer").notCalled();
+
+    }
+
+    @Test
+    public void should_verify_custom_condition() throws Exception {
+        final HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost:8080/login?foo=bar#ref").doReturn("OK");
+        httpClientMock.send(TestRequests.get("http://localhost:8080/login?foo=bar#ref"), discarding());
+
+        httpClientMock.verify().get().with(request -> request.uri().getFragment().length()==3).called();
+    }
 
 }

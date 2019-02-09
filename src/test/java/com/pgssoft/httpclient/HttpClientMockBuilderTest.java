@@ -245,8 +245,8 @@ public class HttpClientMockBuilderTest {
 //        HttpResponse notFound = httpClientMock.execute(new HttpPost("http://localhost/login"));
 //        HttpResponse notFound_2 = httpClientMock.execute(new HttpPost("http://localhost/login?user=john&pass=abc&foo=bar"));
 
-        final var wrong = httpClientMock.send(newBuilder(URI.create("http://localhost/login?user=john")).POST(noBody()).build(), discarding());
-        final var ok = httpClientMock.send(newBuilder(URI.create("http://localhost/login?user=john&pass=abc")).POST(noBody()).build(), discarding());
+        final var wrong = httpClientMock.send(post("http://localhost/login?user=john"), discarding());
+        final var ok = httpClientMock.send(post("http://localhost/login?user=john&pass=abc"), discarding());
 
         //assertThat(notFound, hasStatus(404));
         MatcherAssert.assertThat(wrong, HttpResponseMatchers.hasStatus(400));
