@@ -1,12 +1,11 @@
 package com.pgssoft.httpclient.internal;
 
-import com.pgssoft.httpclient.debug.Debugger;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class UrlParamsMatcher {
 
@@ -36,17 +35,6 @@ public class UrlParamsMatcher {
                 .allMatch(param -> matchers.get(param.getName()).matches(param.getValues()));
     }
 
-
-    private void printParameterDebugMessage(ParameterValue param, Debugger debugger) {
-        if (matchers.containsKey(param.getName())) {
-            boolean matches = matchers.get(param.getName()).matches(param.getValues());
-            String message = "parameter " + param.getName() + " has matching value";
-            debugger.message(matches, message);
-        } else {
-            String message = "parameter " + param.getName() + " is redundant";
-            debugger.message(false, message);
-        }
-    }
 
     public boolean matches(String query) {
         return noMatchersWereDefined() ||

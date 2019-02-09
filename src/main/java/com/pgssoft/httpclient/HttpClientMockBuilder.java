@@ -183,18 +183,6 @@ public final class HttpClientMockBuilder {
     }
 
     /**
-     * Adds action which returns provided response in provided charset and status.
-     *
-     * @param statusCode status to return
-     * @param response   response to return
-     * @param charset    the charset
-     * @return response builder
-     */
-    public HttpClientResponseBuilder doReturn(int statusCode, String response, Charset charset) {
-        return responseBuilder.doReturn(statusCode, response, charset);
-    }
-
-    /**
      * Adds action which returns empty message and provided status.
      *
      * @param statusCode status to return

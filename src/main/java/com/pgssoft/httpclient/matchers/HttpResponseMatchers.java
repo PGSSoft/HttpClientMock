@@ -15,7 +15,6 @@ public final class HttpResponseMatchers {
                 if (!(o instanceof HttpResponse)) {
                     return false;
                 }
-
                 return ((HttpResponse) o).statusCode() == expectedStatus;
             }
 
