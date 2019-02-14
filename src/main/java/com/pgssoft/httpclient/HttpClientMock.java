@@ -303,10 +303,7 @@ public final class HttpClientMock extends HttpClient {
             debugger.debug(rules, request);
         }
 
-        if (rule.isEmpty()) {
-            throw new NoMatchingRuleException(request);
-        }
-        return rule.get();
+        return rule.orElseThrow(() -> new NoMatchingRuleException(request));
     }
 
     @Override
@@ -342,7 +339,7 @@ public final class HttpClientMock extends HttpClient {
         var subscriber = responseBodyHandler.apply(produceResponseInfo(serverResponse));
         var publisher = new SubmissionPublisher<List<ByteBuffer>>();
         publisher.subscribe(subscriber);
-        if (bodyBytes.array().length!=0) {
+        if (bodyBytes.array().length != 0) {
             publisher.submit(List.of(bodyBytes));
         }
         publisher.close();
