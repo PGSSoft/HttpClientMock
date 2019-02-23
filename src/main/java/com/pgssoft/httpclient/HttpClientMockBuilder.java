@@ -1,13 +1,14 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.condition.BodyCondition;
-import com.pgssoft.httpclient.condition.HeaderCondition;
-import com.pgssoft.httpclient.rule.RuleBuilder;
+import com.pgssoft.httpclient.internal.condition.BodyCondition;
+import com.pgssoft.httpclient.internal.condition.HeaderCondition;
+import com.pgssoft.httpclient.internal.rule.RuleBuilder;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Objects;
 
 public final class HttpClientMockBuilder {
 
@@ -27,6 +28,7 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withHeader(String header, String value) {
+        Objects.requireNonNull(header, "header must be not null");
         return withHeader(header, Matchers.equalTo(value));
     }
 
@@ -38,6 +40,8 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withHeader(String header, Matcher<String> matcher) {
+        Objects.requireNonNull(header, "header must be not null");
+        Objects.requireNonNull(matcher, "matcher must be not null");
         ruleBuilder.addCondition(new HeaderCondition(header, matcher));
         return this;
     }
@@ -49,6 +53,7 @@ public final class HttpClientMockBuilder {
      * @return conditions builder
      */
     public HttpClientMockBuilder withReference(String reference) {
+        Objects.requireNonNull(reference, "reference must be not null");
         return withReference(Matchers.equalTo(reference));
     }
 
@@ -59,6 +64,7 @@ public final class HttpClientMockBuilder {
      * @return conditions builder
      */
     public HttpClientMockBuilder withReference(Matcher<String> matcher) {
+        Objects.requireNonNull(matcher, "matcher must be not null");
         ruleBuilder.setReferenceCondition(matcher);
         return this;
     }
@@ -71,6 +77,8 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withParameter(String name, String value) {
+        Objects.requireNonNull(name, "name must be not null");
+        Objects.requireNonNull(value, "value must be not null");
         return withParameter(name, Matchers.equalTo(value));
     }
 
@@ -82,6 +90,8 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withParameter(String name, Matcher<String> matcher) {
+        Objects.requireNonNull(name, "name must be not null");
+        Objects.requireNonNull(matcher, "matcher must be not null");
         ruleBuilder.setParameterCondition(name, matcher);
         return this;
     }
@@ -93,6 +103,7 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder with(Condition condition) {
+        Objects.requireNonNull(condition, "condition must be not null");
         ruleBuilder.addCondition(condition);
         return this;
     }
@@ -104,6 +115,7 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withBody(Matcher<String> matcher) {
+        Objects.requireNonNull(matcher, "matcher must be not null");
         ruleBuilder.addCondition(new BodyCondition(matcher));
         return this;
     }
@@ -115,6 +127,7 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withHost(String host) {
+        Objects.requireNonNull(host, "host must be not null");
         ruleBuilder.addHostCondition(host);
         return this;
     }
@@ -126,6 +139,7 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withPath(String path) {
+        Objects.requireNonNull(path, "path must be not null");
         return withPath(Matchers.equalTo(path));
     }
 
@@ -136,6 +150,7 @@ public final class HttpClientMockBuilder {
      * @return condition builder
      */
     public HttpClientMockBuilder withPath(Matcher<String> matcher) {
+        Objects.requireNonNull(matcher, "matcher must be not null");
         ruleBuilder.setPathCondition(matcher);
         return this;
     }
@@ -147,6 +162,7 @@ public final class HttpClientMockBuilder {
      * @return response builder
      */
     public HttpClientResponseBuilder doAction(Action action) {
+        Objects.requireNonNull(action, "action must be not null");
         return responseBuilder.doAction(action);
     }
 
@@ -157,6 +173,7 @@ public final class HttpClientMockBuilder {
      * @return response builder
      */
     public HttpClientResponseBuilder doReturn(String response) {
+        Objects.requireNonNull(response, "response must be not null");
         return responseBuilder.doReturn(response);
     }
 
@@ -168,6 +185,7 @@ public final class HttpClientMockBuilder {
      * @return response builder
      */
     public HttpClientResponseBuilder doReturn(int statusCode, String response) {
+        Objects.requireNonNull(response, "response must be not null");
         return responseBuilder.doReturn(statusCode, response);
     }
 
@@ -179,6 +197,8 @@ public final class HttpClientMockBuilder {
      * @return response builder
      */
     public HttpClientResponseBuilder doReturn(String response, Charset charset) {
+        Objects.requireNonNull(response, "response must be not null");
+        Objects.requireNonNull(charset, "charset must be not null");
         return responseBuilder.doReturn(response, charset);
     }
 
@@ -199,6 +219,7 @@ public final class HttpClientMockBuilder {
      * @return response builder
      */
     public HttpClientResponseBuilder doThrowException(IOException exception) {
+        Objects.requireNonNull(exception, "exception must be not null");
         return responseBuilder.doThrowException(exception);
     }
 
@@ -209,6 +230,7 @@ public final class HttpClientMockBuilder {
      * @return response builder
      */
     public HttpClientResponseBuilder doReturnJSON(String response) {
+        Objects.requireNonNull(response, "response must be not null");
         return responseBuilder.doReturnJSON(response);
     }
 
@@ -219,6 +241,8 @@ public final class HttpClientMockBuilder {
      * @return response builder
      */
     public HttpClientResponseBuilder doReturnJSON(String response, Charset charset) {
+        Objects.requireNonNull(response, "response must be not null");
+        Objects.requireNonNull(charset, "charset must be not null");
         return responseBuilder.doReturnJSON(response, charset);
     }
 
@@ -229,6 +253,7 @@ public final class HttpClientMockBuilder {
      * @return response builder
      */
     public HttpClientResponseBuilder doReturnXML(String response) {
+        Objects.requireNonNull(response, "response must be not null");
         return responseBuilder.doReturnXML(response);
     }
 
@@ -239,6 +264,8 @@ public final class HttpClientMockBuilder {
      * @return response builder
      */
     public HttpClientResponseBuilder doReturnXML(String response, Charset charset) {
+        Objects.requireNonNull(response, "response must be not null");
+        Objects.requireNonNull(charset, "charset must be not null");
         return responseBuilder.doReturnXML(response, charset);
     }
 }

@@ -1,4 +1,4 @@
-package com.pgssoft.httpclient.action;
+package com.pgssoft.httpclient.internal.action;
 
 import com.pgssoft.httpclient.Action;
 import com.pgssoft.httpclient.MockedServerResponse;

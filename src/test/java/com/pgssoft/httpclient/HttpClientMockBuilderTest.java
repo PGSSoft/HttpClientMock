@@ -1,6 +1,5 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.matchers.HttpResponseMatchers;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;

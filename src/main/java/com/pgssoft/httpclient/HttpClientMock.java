@@ -1,9 +1,9 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.debug.Debugger;
+import com.pgssoft.httpclient.internal.debug.Debugger;
 import com.pgssoft.httpclient.internal.HttpResponseProxy;
-import com.pgssoft.httpclient.rule.Rule;
-import com.pgssoft.httpclient.rule.RuleBuilder;
+import com.pgssoft.httpclient.internal.rule.Rule;
+import com.pgssoft.httpclient.internal.rule.RuleBuilder;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -26,7 +27,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.stream.Collectors;
 
-import static com.pgssoft.httpclient.HttpMethods.*;
+import static com.pgssoft.httpclient.internal.HttpMethods.*;
 
 public final class HttpClientMock extends HttpClient {
 
@@ -156,6 +157,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onGet(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(GET, url);
     }
 
@@ -166,6 +168,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onPost(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(POST, url);
     }
 
@@ -176,6 +179,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onPut(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(PUT, url);
     }
 
@@ -186,6 +190,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onDelete(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(DELETE, url);
     }
 
@@ -196,6 +201,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onHead(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(HEAD, url);
     }
 
@@ -206,6 +212,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onOptions(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(OPTIONS, url);
     }
 
@@ -216,6 +223,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onPatch(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(PATCH, url);
     }
 
@@ -278,6 +286,8 @@ public final class HttpClientMock extends HttpClient {
 
     @Override
     public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException {
+        Objects.requireNonNull(request,"request must be not null");
+        Objects.requireNonNull(responseBodyHandler,"responseBodyHandler must be not null");
         var rule = findNextRule(request);
         var serverResponse = rule.produceResponse();
         var body = submitToBodyHandler(serverResponse, responseBodyHandler);
@@ -310,6 +320,8 @@ public final class HttpClientMock extends HttpClient {
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) {
+        Objects.requireNonNull(request,"request must be not null");
+        Objects.requireNonNull(responseBodyHandler,"responseBodyHandler must be not null");
         try {
             var rule = findNextRule(request);
             var serverResponse = rule.produceResponse();

@@ -1,11 +1,12 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.rule.RuleBuilder;
+import com.pgssoft.httpclient.internal.rule.RuleBuilder;
 
 import java.net.http.HttpRequest;
 import java.util.List;
+import java.util.Objects;
 
-import static com.pgssoft.httpclient.HttpMethods.*;
+import static com.pgssoft.httpclient.internal.HttpMethods.*;
 
 public final class HttpClientVerify {
 
@@ -28,30 +29,37 @@ public final class HttpClientVerify {
     }
 
     public HttpClientVerifyBuilder post(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(POST, url);
     }
 
     public HttpClientVerifyBuilder get(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(GET, url);
     }
 
     public HttpClientVerifyBuilder put(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(PUT, url);
     }
 
     public HttpClientVerifyBuilder delete(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(DELETE, url);
     }
 
     public HttpClientVerifyBuilder head(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(HEAD, url);
     }
 
     public HttpClientVerifyBuilder options(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(OPTIONS, url);
     }
 
     public HttpClientVerifyBuilder patch(String url) {
+        Objects.requireNonNull(url, "URL must be not null");
         return newRule(PATCH, url);
     }
 

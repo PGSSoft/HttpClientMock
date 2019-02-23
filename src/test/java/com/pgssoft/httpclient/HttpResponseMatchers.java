@@ -1,4 +1,4 @@
-package com.pgssoft.httpclient.matchers;
+package com.pgssoft.httpclient;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

@@ -1,11 +1,11 @@
-package com.pgssoft.httpclient.rule;
+package com.pgssoft.httpclient.internal.rule;
 
 import com.pgssoft.httpclient.MockedServerResponse;
 import com.pgssoft.httpclient.internal.UrlConditions;
 import com.pgssoft.httpclient.Action;
-import com.pgssoft.httpclient.action.ActionBundle;
+import com.pgssoft.httpclient.internal.action.ActionBundle;
 import com.pgssoft.httpclient.Condition;
-import com.pgssoft.httpclient.debug.Debugger;
+import com.pgssoft.httpclient.internal.debug.Debugger;
 
 import java.io.IOException;
 import java.net.http.HttpRequest;

@@ -1,6 +1,6 @@
-package com.pgssoft.httpclient.debug;
+package com.pgssoft.httpclient.internal.debug;
 
-import com.pgssoft.httpclient.rule.Rule;
+import com.pgssoft.httpclient.internal.rule.Rule;
 
 import java.net.http.HttpRequest;
 import java.util.List;

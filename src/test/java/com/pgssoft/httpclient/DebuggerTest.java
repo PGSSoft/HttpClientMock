@@ -1,7 +1,7 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.debug.Debugger;
-import com.pgssoft.httpclient.rule.Rule;
+import com.pgssoft.httpclient.internal.debug.Debugger;
+import com.pgssoft.httpclient.internal.rule.Rule;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

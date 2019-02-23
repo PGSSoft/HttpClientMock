@@ -1,6 +1,6 @@
 package com.pgssoft.httpclient.internal;
 
-import com.pgssoft.httpclient.debug.Debugger;
+import com.pgssoft.httpclient.internal.debug.Debugger;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.StringDescription;

@@ -1,4 +1,4 @@
-package com.pgssoft.httpclient.condition;
+package com.pgssoft.httpclient.internal.condition;
 
 import com.pgssoft.httpclient.Condition;
 import org.hamcrest.Matcher;

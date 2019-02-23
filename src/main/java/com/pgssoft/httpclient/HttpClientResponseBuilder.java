@@ -1,7 +1,7 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.action.*;
-import com.pgssoft.httpclient.rule.RuleBuilder;
+import com.pgssoft.httpclient.internal.action.*;
+import com.pgssoft.httpclient.internal.rule.RuleBuilder;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

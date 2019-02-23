@@ -14,8 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.pgssoft.httpclient.matchers.HttpResponseMatchers.hasContent;
-import static com.pgssoft.httpclient.matchers.HttpResponseMatchers.hasStatus;
+import static com.pgssoft.httpclient.HttpResponseMatchers.hasContent;
+import static com.pgssoft.httpclient.HttpResponseMatchers.hasStatus;
 import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
