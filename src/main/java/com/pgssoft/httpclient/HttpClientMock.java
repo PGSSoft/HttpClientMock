@@ -26,6 +26,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.stream.Collectors;
 
+import static com.pgssoft.httpclient.HttpMethods.*;
+
 public final class HttpClientMock extends HttpClient {
 
     private final Debugger debugger;
@@ -87,7 +89,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows  to define new rule
      */
     public HttpClientMockBuilder onPost() {
-        return newRule("POST");
+        return newRule(POST);
     }
 
     /**
@@ -96,7 +98,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows  to define new rule
      */
     public HttpClientMockBuilder onGet() {
-        return newRule("GET");
+        return newRule(GET);
     }
 
     /**
@@ -105,7 +107,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows  to define new rule
      */
     public HttpClientMockBuilder onDelete() {
-        return newRule("DELETE");
+        return newRule(DELETE);
     }
 
     /**
@@ -114,7 +116,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows  to define new rule
      */
     public HttpClientMockBuilder onHead() {
-        return newRule("HEAD");
+        return newRule(HEAD);
     }
 
     /**
@@ -123,7 +125,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows  to define new rule
      */
     public HttpClientMockBuilder onOptions() {
-        return newRule("OPTIONS");
+        return newRule(OPTIONS);
     }
 
     /**
@@ -132,7 +134,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows  to define new rule
      */
     public HttpClientMockBuilder onPut() {
-        return newRule("PUT");
+        return newRule(PUT);
     }
 
     /**
@@ -141,7 +143,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows  to define new rule
      */
     public HttpClientMockBuilder onPatch() {
-        return newRule("PATCH");
+        return newRule(PATCH);
     }
 
     /**
@@ -154,7 +156,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onGet(String url) {
-        return newRule("GET", url);
+        return newRule(GET, url);
     }
 
     /**
@@ -164,7 +166,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onPost(String url) {
-        return newRule("POST", url);
+        return newRule(POST, url);
     }
 
     /**
@@ -174,7 +176,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onPut(String url) {
-        return newRule("PUT", url);
+        return newRule(PUT, url);
     }
 
     /**
@@ -184,7 +186,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onDelete(String url) {
-        return newRule("DELETE", url);
+        return newRule(DELETE, url);
     }
 
     /**
@@ -194,7 +196,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onHead(String url) {
-        return newRule("HEAD", url);
+        return newRule(HEAD, url);
     }
 
     /**
@@ -204,7 +206,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onOptions(String url) {
-        return newRule("OPTIONS", url);
+        return newRule(OPTIONS, url);
     }
 
     /**
@@ -214,7 +216,7 @@ public final class HttpClientMock extends HttpClient {
      * @return HttpClientMockBuilder which allows to define new rule
      */
     public HttpClientMockBuilder onPatch(String url) {
-        return newRule("PATCH", url);
+        return newRule(PATCH, url);
     }
 
     private HttpClientMockBuilder newRule(String method) {

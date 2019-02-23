@@ -171,13 +171,10 @@ public final class HttpClientVerifyBuilder {
      * @param numberOfCalls expected number of calls
      */
     public void called(Matcher<Integer> numberOfCalls) {
-        int matchingCalls = 0;
         Rule rule = ruleBuilder.build();
-        for (HttpRequest request : requests) {
-            if (rule.matches(request)) {
-                matchingCalls++;
-            }
-        }
+        int matchingCalls = (int)requests.stream()
+                .filter(rule::matches)
+                .count();
         if (!numberOfCalls.matches(matchingCalls)) {
             throw new IllegalStateException(String.format("Expected %s calls, but found %s.", numberOfCalls, matchingCalls));
         }
