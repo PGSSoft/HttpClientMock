@@ -11,6 +11,9 @@ HttpClientMock is a library for mocking [Java HttpClient](https://docs.oracle.co
 * [Define response](#define-response)
 * [Verification](#verification)
 * [Examples](#examples)
+* [License](#license)
+* [About](#about)
+* [Follow us](#follow_us)
 
 ## Installation
 
@@ -254,4 +257,17 @@ httpClientMock.onGet("http://localhost:8080/login")
 // VERIFICATION
 httpClientMock.verify().get("/login?user=john").called();
 ```
+
+## License
+
+The project is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
+## About
+
+The project maintained by [software development agency](https://www.pgs-soft.com/) [PGS Software](https://www.pgs-soft.com/).
+See our other [open-source projects](https://github.com/PGSSoft) or [contact us](https://www.pgs-soft.com/contact-us/) to develop your product.
+
+## Follow us
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/pgssoftware.svg?style=social&label=Follow)](https://twitter.com/pgssoftware)
 
