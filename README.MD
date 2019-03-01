@@ -4,12 +4,21 @@
 
 HttpClientMock is a library for mocking [Java HttpClient](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html). It has an intuitive fluent API for defining client behaviour and verifing number of made requests.
 
+* [Installation](#installation)
+* [Requirements](#requirements)
 * [Usage](#usage)
 * [Request matching](#request-matching)
 * [Define response](#define-response)
 * [Verification](#verification)
 * [Examples](#examples)
 
+## Installation
+
+HttpClientMock is available in Maven Central Repository.
+
+## Requirements
+
+* Java 11
 
 ## Usage
 
