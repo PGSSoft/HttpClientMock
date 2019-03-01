@@ -1,3 +1,5 @@
+![pgssoft-logo.png](pgssoft-logo.png)
+
 # HttpClientMock
 
 HttpClientMock is a library for mocking [Java HttpClient](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html). It has an intuitive fluent API for defining client behaviour and verifing number of made requests.
