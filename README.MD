@@ -13,7 +13,7 @@ HttpClientMock is a library for mocking [Java HttpClient](https://docs.oracle.co
 * [Examples](#examples)
 * [License](#license)
 * [About](#about)
-* [Follow us](#follow_us)
+* [Follow us](#follow-us)
 
 ## Installation
 
