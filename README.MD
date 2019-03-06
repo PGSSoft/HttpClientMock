@@ -18,11 +18,13 @@ HttpClientMock is a library for mocking [Java HttpClient](https://docs.oracle.co
 ## Installation
 
 HttpClientMock is available in Maven Central Repository.
+```
 <dependency>
     <groupId>com.pgs-soft</groupId>
     <artifactId>HttpClientMock</artifactId>
     <version>1.0.0</version>
 </dependency>
+```
 
 ## Requirements
 
