@@ -359,7 +359,13 @@ public final class HttpClientMock extends HttpClient {
         publisher.close();
         try {
             return subscriber.getBody().toCompletableFuture().get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (ExecutionException e) {
+            var cause = e.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            throw new RuntimeException("Well, you threw a checked exception when handling the response, now I must wrap it. Blame yourself!", cause);
+        } catch (InterruptedException e) {
             throw new IllegalStateException("Error reading the mocked response body - did you forget to provide it? " +
                     "If there should be no body, try using BodyHandlers.discarding() when making the request", e);
         }
