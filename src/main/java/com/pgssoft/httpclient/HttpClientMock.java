@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 import static com.pgssoft.httpclient.internal.HttpMethods.*;
 
-public final class HttpClientMock extends HttpClient {
+public class HttpClientMock extends HttpClient {
 
     private final Debugger debugger;
     private final List<Rule> rules = new ArrayList<>();
@@ -227,13 +227,13 @@ public final class HttpClientMock extends HttpClient {
         return newRule(PATCH, url);
     }
 
-    private HttpClientMockBuilder newRule(String method) {
+    protected HttpClientMockBuilder newRule(String method) {
         RuleBuilder r = new RuleBuilder(method);
         rulesUnderConstruction.add(r);
         return new HttpClientMockBuilder(r);
     }
 
-    private HttpClientMockBuilder newRule(String method, String url) {
+    protected HttpClientMockBuilder newRule(String method, String url) {
         RuleBuilder r = new RuleBuilder(method, host, url);
         rulesUnderConstruction.add(r);
         return new HttpClientMockBuilder(r);
@@ -348,7 +348,7 @@ public final class HttpClientMock extends HttpClient {
         debuggingOn = false;
     }
 
-    private <T> T submitToBodyHandler(MockedServerResponse serverResponse, HttpResponse.BodyHandler<T> responseBodyHandler) {
+    protected <T> T submitToBodyHandler(MockedServerResponse serverResponse, HttpResponse.BodyHandler<T> responseBodyHandler) {
         var bodyBytes = serverResponse.getBodyBytes();
         var subscriber = responseBodyHandler.apply(produceResponseInfo(serverResponse));
         var publisher = new SubmissionPublisher<List<ByteBuffer>>();
@@ -371,7 +371,7 @@ public final class HttpClientMock extends HttpClient {
         }
     }
 
-    private HttpResponse.ResponseInfo produceResponseInfo(MockedServerResponse response) {
+    protected HttpResponse.ResponseInfo produceResponseInfo(MockedServerResponse response) {
         return new HttpResponse.ResponseInfo() {
             @Override
             public int statusCode() {
