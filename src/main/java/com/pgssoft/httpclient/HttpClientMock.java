@@ -1,7 +1,7 @@
 package com.pgssoft.httpclient;
 
-import com.pgssoft.httpclient.internal.debug.Debugger;
 import com.pgssoft.httpclient.internal.HttpResponseProxy;
+import com.pgssoft.httpclient.internal.debug.Debugger;
 import com.pgssoft.httpclient.internal.rule.Rule;
 import com.pgssoft.httpclient.internal.rule.RuleBuilder;
 
@@ -330,7 +330,9 @@ public final class HttpClientMock extends HttpClient {
             var response = new HttpResponseProxy<>(serverResponse.statusCode(), httpHeaders, body, request);
             return CompletableFuture.completedFuture(response);
         } catch (IOException e) {
-            throw new IllegalStateException(e);
+            var future = new CompletableFuture<HttpResponse<T>>();
+            future.completeExceptionally(e);
+            return future;
         }
 
     }
