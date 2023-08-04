@@ -1,5 +1,3 @@
-![pgssoft-logo.png](pgssoft-logo.png)
-
 # HttpClientMock
 
 HttpClientMock is a library for mocking [Java HttpClient](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html). It has an intuitive fluent API for defining client behaviour and verifing number of made requests.
@@ -20,8 +18,8 @@ HttpClientMock is a library for mocking [Java HttpClient](https://docs.oracle.co
 HttpClientMock is available in Maven Central Repository.
 ```
 <dependency>
-    <groupId>com.pgs-soft</groupId>
-    <artifactId>HttpClientMock</artifactId>
+    <groupId>com.xebia</groupId>
+    <artifactId>http-client-mock</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
@@ -271,10 +269,11 @@ The project is available as open source under the terms of the [MIT License](htt
 
 ## About
 
-The project maintained by [software development agency](https://www.pgs-soft.com/) [PGS Software](https://www.pgs-soft.com/).
-See our other [open-source projects](https://github.com/PGSSoft) or [contact us](https://www.pgs-soft.com/contact-us/) to develop your product.
+The project maintained by [Xebia](https://www.xebia.com/).
+
+See our other [open-source projects](https://github.com/xebia) or [contact us](https://xebia.com/am/about-us/contact/) to develop your product.
 
 ## Follow us
 
-[![Twitter Follow](https://img.shields.io/twitter/follow/pgssoftware.svg?style=social&label=Follow)](https://twitter.com/pgssoftware)
+[![Twitter Follow](https://img.shields.io/twitter/follow/xebia.svg?style=social&label=Follow)](https://twitter.com/xebia)
 

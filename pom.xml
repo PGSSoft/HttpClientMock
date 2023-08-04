@@ -2,14 +2,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.pgs-soft</groupId>
-    <artifactId>HttpClientMock</artifactId>
+    <groupId>com.xebia</groupId>
+    <artifactId>http-client-mock</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Library for mocking JDK 11 HttpClient.</description>
-    <url>https://github.com/PGSSoft/HttpClientMock</url>
+    <url>https://github.com/xebia/HttpClientMock</url>
     <licenses>
         <license>
             <name>MIT License</name>
@@ -27,9 +27,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://github.com/PGSSoft/HttpClientMock.git</connection>
-        <developerConnection>scm:git:ssh://github.com:PGSSoft/HttpClientMock.git</developerConnection>
-        <url>http://github.com/PGSSoft/HttpClientMock/tree/master</url>
+        <connection>scm:git:git://github.com/xebia/HttpClientMock.git</connection>
+        <developerConnection>scm:git:ssh://github.com:xebia/HttpClientMock.git</developerConnection>
+        <url>http://github.com/xebia/HttpClientMock/tree/master</url>
     </scm>
 
 
