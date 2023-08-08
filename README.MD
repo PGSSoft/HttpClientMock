@@ -1,3 +1,7 @@
+Note: This project has been abandoned. Consider using https://github.com/PawelAdamski/HttpClientMock
+
+---
+
 ![pgssoft-logo.png](pgssoft-logo.png)
 
 # HttpClientMock
